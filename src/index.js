@@ -20,9 +20,27 @@ app.get('/favicon.ico', (req, res) => {
 });
 
 app.use('/__app', express.static('static'))
+app.use('/node_modules', express.static('node_modules'));
 
 app.get('/__responses', (req, res) => {
     res.status(200).send(responseStack.asJSON());
+});
+
+app.delete('/__response', (req, res) => {
+    logger.verbose('delete', req.body);
+    res.status(500).send('work in progress');
+});
+
+app.post('/__response', (req, res) => {
+    logger.verbose('updating response', req.body);
+
+    responseStack.update(req.body).then(() => {
+        res.sendStatus(204);
+
+    }).catch(err => {
+        res.status(500).send(err);
+    });
+
 });
 
 app.all('/_:verb/*', (req, res) => {
@@ -36,7 +54,7 @@ app.all('/_:verb/*', (req, res) => {
     const triggerUrl = req.url.replace("/_" + verb, '');
 
     responseStack.push(new StubbedResponse(verb, triggerUrl, req.body));
-    logger.verbose(`responseStack contains ${responseStack.length} values`);
+    logger.verbose(`responseStack contains ${responseStack.getCount()} values`);
 
     const response = {
         triggerUrl: triggerUrl

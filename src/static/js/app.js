@@ -2,46 +2,86 @@ var stubApp = angular.module('stubApp', []);
 
 stubApp.controller('ResponseController', function ($scope, $http) {
 
-    $scope.editing = false;
-
-    const previousValues = {};
+    let currentResponse;
 
     $scope.verbs = ['GET', 'POST', 'PUT'];
 
-    $scope.showResponseDetails = function (response) {
-        response.jsonText = JSON.stringify(response.body, null, 4);
-
-        previousValues.url = response.url;
-        previousValues.method = response.method;
-        previousValues.body = response.body;
-
-        $scope.selectedResponse = response;
+    function getFormattedJSON(o) {
+        return JSON.stringify(o, null, 4);
     }
 
-    $scope.startEditing = function () {
+    $scope.isEditing = function (response) {
+        return currentResponse == response;
+    };
+
+    $scope.startEditing = function (response) {
+        currentResponse = response;
+        $scope.selectedResponse = response;
         $scope.editing = true;
     }
 
-    $scope.endEditingAndSave = function(){
-        $scope.editing = false;
+    $scope.endEditingAndSave = function () {
+        // Update body from the json
+        const json = $scope.selectedResponse.jsonText;
+        const o = JSON.parse(json);
+
+        $scope.selectedResponse.body = o;
+        $scope.selectedResponse.jsonText = getFormattedJSON(o);
+
+        updateResponse($scope.selectedResponse, function (err) {
+            if (err) {
+                console.error(err);
+            }
+            currentResponse = undefined;
+        });
+    };
+
+    $scope.toggleJSONPreview = function () {
+        console.log('yay');
+        $scope.jsonPreview = !$scope.jsonPreview;
+    };
+
+    $scope.delete = function (response) {
+        var payload = { uid: response.uid };
+        $http.delete('/__response', payload).then(function (result) {
+            //yay
+        }).catch(function (err) {
+            console.error(err);
+        })
     };
 
     $scope.cancelEditing = function () {
-        
-        $scope.editing = false;
-        if(!$scope.selectedResponse)
-            return;
-
-        $scope.selectedResponse.method = previousValues.method;
-        $scope.selectedResponse.url = previousValues.url;
-        $scope.selectedResponse.body = previousValues.body;
+        currentResponse = undefined;
+        loadResponses();
     }
 
-    $http.get('/__responses').then(response => {
-        $scope.responses = response.data;
+    function updateResponse(response, cb) {
+        const payload = _.cloneDeep(response);
+        delete payload['jsonText'];
+        $http.post('/__response', payload).then(function (result) {
+            cb(null);
+        }).catch(function (err) {
+            cb(err);
+        });
 
-    }).catch(err => {
-        console.error(err);
-    });
+    }
+
+    function loadResponses() {
+        $http.get('/__responses').then(response => {
+
+            const responses = [];
+            _.each(response.data, function (response) {
+                response.jsonText = getFormattedJSON(response.body);
+                responses.push(response);
+            })
+
+            $scope.responses = responses;;
+
+        }).catch(err => {
+            console.error(err);
+        });
+    }
+
+    loadResponses();
 
 });

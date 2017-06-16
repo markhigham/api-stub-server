@@ -3,7 +3,8 @@
 <head>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
         crossorigin="anonymous">
-
+    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" integrity="sha384-h21C2fcDk/eFsW9sC9h0dhokq5pDinLNklTKoxIZRUn3+hvmgQSffLLQ4G4l2eEr"
+        crossorigin="anonymous">
     <link href="css/site.css" type="text/css" rel="stylesheet" />
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -12,9 +13,10 @@
         crossorigin="anonymous"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src='/node_modules/lodash/lodash.js'></script>
 </head>
 
-<body ng-app='stubApp' class="ng-cloak">
+<body ng-app='stubApp' class="ng-cloak" ng-controller="ResponseController">
 
     <nav class="navbar navbar-default navbar-inverse">
         <div class="container">
@@ -22,62 +24,62 @@
                 <a class="navbar-brand" href="#">
                     api-stub-server {{version}}
                 </a>
+
             </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><button type="button" class="btn btn-default navbar-btn" ng-click='toggleJSONPreview()'>Show JSON</button></li>
+            </ul>
         </div>
     </nav>
-    <div ng-controller="ResponseController">
+    <div>
         <div class="container">
             <div class="row">
-                <div class='col-md-3'>
-                    <ul class="nav nav-pills nav-stacked">
-                        <li role='presentation' ng-repeat='response in responses'>
-                            <a class='show-pointer' ng-click='showResponseDetails(response)'><span style='text-transform:uppercase;'>{{response.method}}</span> {{response.url}}</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class='col-md-9' ng-if='selectedResponse'>
-
-                    <p ng-if='!editing'>
-                        <strong>{{ selectedResponse.method}} {{ selectedResponse.url }}</strong>
-                        <a class='show-pointer' ng-click='startEditing()'>edit</a>
-                    </p>
-
-                    <pre ng-if='!editing'>{{ selectedResponse.jsonText }}</pre>
-
-                    <div ng-if='editing'>
-
-                        <form class='form-horizontal'>
-                            <div class='form-group'>
-                                <div class='col-sm-2'>
-                                    <select class='form-control' ng-model='selectedResponse.method' ng-options='verb for verb in verbs'>
+                <div class='col-md-12'>
+                    <div ng-repeat='response in responses'>
+                        <ng-switch on='isEditing(response)'>
+                            <div ng-switch-when='false'>
+                                <p>
+                                    <button class='btn btn-primary btn-xs' ng-click='startEditing(response)'>Edit</button>
+                                    <button class='btn btn-danger btn-xs' ng-click='delete(response)'>Delete</button>
+                                    <strong>{{ response.method}} {{ response.url }}</strong>&nbsp;
+                                </p>
+                                <pre ng-if='jsonPreview' ng-click='startEditing(response)' class='show-pointer'>{{ response.jsonText }}</pre>
+                            </div>
+                            
+                            <div ng-switch-when='true'>
+                                <br>
+                                <form class='form-horizontal'>
+                                    <div class='form-group'>
+                                        <div class='col-sm-2'>
+                                            <select class='form-control' ng-model='response.method' ng-options='verb for verb in verbs'>
                                 </select>
-                                </div>
+                                        </div>
 
-                                <div class='col-sm-10'>
-                                    <input type='text' class='form-control' ng-model="selectedResponse.url" />
-                                </div>
+                                        <div class='col-sm-10'>
+                                            <input type='text' class='form-control' ng-model="response.url" />
+                                        </div>
 
 
+                                    </div>
+                                    <div class='form-group'>
+                                        <div class='col-sm-12'>
+                                            <textarea class="form-control" style='font-family:monospace;' rows="10" ng-model='response.jsonText'></textarea>
+                                        </div>
+                                    </div>
+                                    <div class='form-group'>
+                                        <div class='pull-right'>
+                                            <button class='btn btn-info' ng-click='endEditingAndSave()'>Update</button>
+                                            <button class='btn' ng-click='cancelEditing()'>Cancel</button>
+
+                                            <br><br>
+                                        </div>
+                                    </div>
+
+                                </form>
                             </div>
-                            <div class='form-group'>
-                                <div class='col-sm-12'>
-                                    <textarea class="form-control" style='font-family:monospace;' rows="10">{{ selectedResponse.jsonText }}</textarea>
-                                </div>
-                            </div>
-                            <div class='form-group'>
-                                <div class='pull-right'>
-                                    <button class='btn btn-info' ng-click='endEditingAndSave()'>Update</button>
-                                    <button class='btn' ng-click='cancelEditing()'>Cancel</button>
-
-                                    <br><br>
-                                </div>
-                            </div>
-
-                        </form>
+                        </ng-switch>
                     </div>
                 </div>
-
 
             </div>
         </div>
