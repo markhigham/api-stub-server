@@ -1,4 +1,5 @@
 'use strict';
+const uuidV4 = require('uuid/v4');
 
 const logger = require('./logger')('stubbed-response');
 
@@ -6,6 +7,7 @@ function stubbedResponse(method, url, body) {
     this.method = method.toLowerCase();
     this.body = body;
     this.url = url;
+    this.uid = uuidV4();
 }
 
 stubbedResponse.prototype.isMatch = function (method, testUrl) {

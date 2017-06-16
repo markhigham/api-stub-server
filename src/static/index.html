@@ -36,11 +36,52 @@
                     </ul>
                 </div>
 
-                <div class='col-md-9'>
-                    <textarea class="form-control" style='font-family:monospace;' rows="3">{{ selectedResponse.body }}</textarea>
+                <div class='col-md-9' ng-if='selectedResponse'>
+
+                    <p ng-if='!editing'>
+                        <strong>{{ selectedResponse.method}} {{ selectedResponse.url }}</strong>
+                        <a class='show-pointer' ng-click='startEditing()'>edit</a>
+                    </p>
+
+                    <pre ng-if='!editing'>{{ selectedResponse.jsonText }}</pre>
+
+                    <div ng-if='editing'>
+
+                        <form class='form-horizontal'>
+                            <div class='form-group'>
+                                <div class='col-sm-2'>
+                                    <select class='form-control' ng-model='selectedResponse.method' ng-options='verb for verb in verbs'>
+                                </select>
+                                </div>
+
+                                <div class='col-sm-10'>
+                                    <input type='text' class='form-control' ng-model="selectedResponse.url" />
+                                </div>
+
+
+                            </div>
+                            <div class='form-group'>
+                                <div class='col-sm-12'>
+                                    <textarea class="form-control" style='font-family:monospace;' rows="10">{{ selectedResponse.jsonText }}</textarea>
+                                </div>
+                            </div>
+                            <div class='form-group'>
+                                <div class='pull-right'>
+                                    <button class='btn btn-info' ng-click='endEditingAndSave()'>Update</button>
+                                    <button class='btn' ng-click='cancelEditing()'>Cancel</button>
+
+                                    <br><br>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
                 </div>
+
+
             </div>
         </div>
+    </div>
     </div>
 
 
