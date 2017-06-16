@@ -12,7 +12,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="/node_modules/angular/angular.min.js"></script>
+    <script src="/node_modules/angular-local-storage/dist/angular-local-storage.js"></script>
     <script src='/node_modules/lodash/lodash.js'></script>
 </head>
 
@@ -27,7 +28,10 @@
 
             </div>
             <ul class="nav navbar-nav navbar-right">
-                <li><button type="button" class="btn btn-default navbar-btn" ng-click='toggleJSONPreview()'>Show JSON</button></li>
+                <li><button class='btn btn-warning navbar-btn btn-xs'>New</button></li>
+                <li>&nbsp;</li>
+                <li><button type="button" class="btn btn-info navbar-btn btn-xs" data-toggle="button" aria-pressed="false"
+                        autocomplete="off" ng-click='toggleJSONPreview()'>Show JSON</button></li>
             </ul>
         </div>
     </nav>
@@ -45,7 +49,7 @@
                                 </p>
                                 <pre ng-if='jsonPreview' ng-click='startEditing(response)' class='show-pointer'>{{ response.jsonText }}</pre>
                             </div>
-                            
+
                             <div ng-switch-when='true'>
                                 <br>
                                 <form class='form-horizontal'>

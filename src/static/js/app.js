@@ -1,4 +1,4 @@
-var stubApp = angular.module('stubApp', []);
+var stubApp = angular.module('stubApp', ['LocalStorageModule']);
 
 stubApp.controller('ResponseController', function ($scope, $http) {
 
@@ -58,7 +58,7 @@ stubApp.controller('ResponseController', function ($scope, $http) {
     function updateResponse(response, cb) {
         const payload = _.cloneDeep(response);
         delete payload['jsonText'];
-        $http.post('/__response', payload).then(function (result) {
+        $http.put('/__response', payload).then(function (result) {
             cb(null);
         }).catch(function (err) {
             cb(err);

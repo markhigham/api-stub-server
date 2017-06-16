@@ -31,7 +31,7 @@ app.delete('/__response', (req, res) => {
     res.status(500).send('work in progress');
 });
 
-app.post('/__response', (req, res) => {
+app.put('/__response', (req, res) => {
     logger.verbose('updating response', req.body);
 
     responseStack.update(req.body).then(() => {
