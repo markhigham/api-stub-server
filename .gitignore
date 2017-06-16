@@ -1,0 +1,10 @@
+/lib/dynamodb_local*/**
+.DS_Store
+/src/.tscache
+/dist
+node_modules
+typings
+.tscache
+
+
+/.idea/workspace.xml
