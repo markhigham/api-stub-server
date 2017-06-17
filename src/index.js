@@ -26,10 +26,27 @@ app.get('/__responses', (req, res) => {
     res.status(200).send(responseStack.asJSON());
 });
 
+app.get('/__responses/download', (req,res) => {
+    res.setHeader('Content-type', 'application/json');
+    res.setHeader('Content-disposition', 'attachment; filename=data.json');
+    res.send(responseStack.asJSON());
+});
+
 app.delete('/__response/:uid', (req, res) => {
     logger.verbose('delete', req.params.uid);
     responseStack.delete(req.params.uid).then(() => {
         res.sendStatus(204);
+    }).catch(err => {
+        res.status(500).send(err);
+    });
+
+});
+
+app.post('/__response', (req, res) => {
+    logger.verbose('creating new response', req.body);
+
+    responseStack.push(req.body).then(() => {
+        res.sendStatus(202);
     }).catch(err => {
         res.status(500).send(err);
     });

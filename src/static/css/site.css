@@ -33,3 +33,26 @@
 .action-container{
   float:right;
 }
+
+.actions-bar button {
+  float:left;
+  margin-right: 0.5em;
+}
+
+.actions-bar a {
+  display:block;
+}
+
+.preview-container {
+  position: relative;
+}
+
+.preview-container .toolbox-button {
+  position: absolute;
+  font-size: 18px;
+  padding: 0.5em;
+  right: 0;
+  top: 0;
+  color: #ccc;
+  text-shadow: 1px 1px 1px #fff;
+}

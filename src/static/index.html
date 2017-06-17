@@ -22,7 +22,7 @@
         <nav class="navbar navbar-default navbar-inverse">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="#">
+                    <a class="navbar-brand" href="/__app">
                     api-stub-server {{version}}
                 </a>
                 </div>
@@ -31,7 +31,7 @@
                         <a class='show-pointer'>&nbsp;<span class='glyphicon glyphicon-upload'></span>&nbsp;</a>
                     </li>
                     <li>
-                        <a class='show-pointer'>&nbsp;<span class='glyphicon glyphicon-download'></span>&nbsp;</a>
+                        <a href='/__responses/download'>&nbsp;<span class='glyphicon glyphicon-download'></span>&nbsp;</a>
                     </li>
                     <li ng-class="{ active: jsonPreview }">
                         <a class='show-pointer' ng-click='toggleJSONPreview()'>&nbsp;<span class='glyphicon glyphicon-th-list'></span>&nbsp;</a>
@@ -41,9 +41,9 @@
             </div>
         </nav>
         <div class='container'>
-        <div class='action-container'>
-            <button class='btn btn-success' ng-click='createNew()'><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Add new</button>
-        </div>
+            <div class='action-container'>
+                <button class='btn btn-success' ng-click='createNew()'><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Add new</button>
+            </div>
         </div>
     </div>
     <div ng-controller="ResponseController">
@@ -53,14 +53,19 @@
                     <div ng-repeat='response in responses'>
                         <ng-switch on='isEditing(response)'>
                             <div ng-switch-when='false'>
-                                <p>
+                                <p class='actions-bar'>
                                     <button class='btn btn-primary btn-xs' ng-click='startEditing(response)'>Edit</button>
                                     <button ng-if='!response.confirmDelete' class='animate-if btn btn-danger btn-xs' ng-click='promptDelete(response)'><span class=''></span> Delete</button>
                                     <button ng-if='response.confirmDelete' class='btn btn-default btn-xs' ng-click='cancelDelete(response)'>Cancel</button>
                                     <button ng-if='response.confirmDelete' class='btn btn-danger btn-xs' ng-click='delete(response)'><span class=''></span> Confirm</button>
-                                    <label ng-class='response.cssClassName' ng-click='startEditing(response)' class='show-pointer'>{{ response.method}} {{ response.url }}</label>
+                                    <a ng-class='response.cssClassName' ng-click='startEditing(response)' class='show-pointer'>{{ response.method}} {{ response.url }}</a>
                                 </p>
-                                <pre ng-if='jsonPreview' ng-click='startEditing(response)' class='show-pointer'>{{ response.jsonText }}</pre>
+                                <div ng-if='jsonPreview' class='preview-container'>
+                                    <div class='toolbox-button show-pointer'>
+                                        <span class='glyphicon glyphicon-cog'></span>
+                                    </div>
+                                    <pre ng-click='startEditing(response)' class='show-pointer'>{{ response.jsonText }}</pre>
+                                </div>
                             </div>
 
                             <div ng-switch-when='true'>
@@ -69,26 +74,35 @@
                                     <div class='form-group'>
                                         <div class='col-sm-2'>
                                             <select class='form-control' ng-model='response.method' ng-options='verb for verb in verbs'>
-                                </select>
+                                            </select>
                                         </div>
-
-                                        <div class='col-sm-10'>
+                                        <div class='col-sm-8'>
                                             <input type='text' class='form-control' ng-model="response.url" />
                                         </div>
-
+                                        <div class='col-sm-2'>
+                                            <select class='form-control' ng-model='response.usageType' ng-options='type for type in usageTypes'>
+                                               
+                                                </select>
+                                        </div>
 
                                     </div>
                                     <div class='form-group'>
                                         <div class='col-sm-12'>
-                                            <textarea id='editor_{{ response.uid }}' ng-keydown="jsonBodyKeyDown($event, response)" class="form-control" style='font-family:monospace;' rows="10" ng-model='response.jsonText'></textarea>
+                                            <textarea id='editor_{{ response.uid }}' ng-keydown="jsonBodyKeyDown($event, response)" class="form-control" style='font-family:monospace;'
+                                                rows="10" ng-model='response.jsonText'></textarea>
                                         </div>
                                     </div>
                                     <div class='form-group'>
-                                        <div class='pull-right'>
-                                            <button class='btn btn-info' ng-click='endEditingAndSave(response)'>Update</button>
-                                            <button class='btn' ng-click='cancelEditing(response)'>Cancel</button>
-
-                                            <br><br>
+                                        <div class='col-sm-12'>
+                                            <div class='pull-right'>
+                                                <button class='btn btn-primary' ng-click='save(response)'>
+                                                <span ng-if='!response.isNew'>Update</span>
+                                                <span ng-if='response.isNew'>Create</span>
+                                            </button>
+                                                <button class='btn' ng-click='cancel(response)'>
+                                                <span>Cancel</span>
+                                            </button>
+                                            </div>
                                         </div>
                                     </div>
 

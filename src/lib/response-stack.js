@@ -53,7 +53,6 @@ function responseStack() {
 
     self.push = function (stubbedResponse) {
         stack.push(stubbedResponse);
-
         hash[stubbedResponse.uid] = stubbedResponse;
         logger.verbose(hash);
     }
@@ -64,7 +63,9 @@ function responseStack() {
 
     self.find = function (method, url) {
         let response = undefined;
+        
         //Find in the responses array
+
         for (let i = stack.length - 1; i >= 0; i--) {
             logger.verbose(i);
             const stub = stack[i];
@@ -72,7 +73,10 @@ function responseStack() {
             if (stub.isMatch(method, url)) {
                 logger.verbose(stub);
                 response = stub.body;
-                stack.splice(i, 1);
+                
+                if(response.usageType != 'persistent')
+                    stack.splice(i, 1);
+
                 break;
             }
         }

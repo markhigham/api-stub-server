@@ -6,6 +6,7 @@ const logger = require('./logger')('stubbed-response');
 function stubbedResponse(method, url, body) {
     this.method = method.toLowerCase();
     this.body = body;
+    this.usageType = 'persistent';
     this.url = url;
     this.uid = uuidV4();
 }

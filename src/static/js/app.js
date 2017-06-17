@@ -62,6 +62,7 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
 
     $scope.responses = [];
     $scope.verbs = ['get', 'post', 'put', 'delete'];
+    $scope.usageTypes = ['Persistent', 'Single Use'];
 
     function getFormattedJSON(o) {
         return JSON.stringify(o, null, 4);
@@ -73,7 +74,16 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
     });
 
     $scope.$on('createNew', function ($event) {
-        alert('work in progress');
+        var response = {
+            isEditing: true,
+            isNew: true,
+            method: 'get',
+            body: {},
+            jsonText: "{}"
+
+        };
+
+        $scope.responses.unshift(response);
     });
 
     $scope.isEditing = function (response) {
@@ -92,7 +102,25 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
         });
     }
 
-    $scope.endEditingAndSave = function (response) {
+    function saveNew(response) {
+        //Should probably do a little more validation here ...
+        const json = response.jsonText;
+        const body = JSON.parse(json);
+        response.body = body;
+        response.jsonText = getFormattedJSON(body);
+
+        response.isEditing = false;
+        response.isNew = false;
+
+        createResponse(response, function (err) {
+            if (err) {
+                console.error(err);
+            }
+        });
+
+    }
+
+    function saveExisting(response) {
         // Update body from the json
         const json = response.jsonText;
         const o = JSON.parse(json);
@@ -127,26 +155,65 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
         })
     };
 
-    $scope.cancelEditing = function (response) {
+    function cancelExistingEdit(response) {
         response.isEditing = false;
         loadResponses();
     }
 
     $scope.jsonBodyKeyDown = function ($event, response) {
         if ($event.keyCode == 27) {
-            $scope.cancelEditing(response);
+            $scope.cancel(response);
             return;
         }
 
         if (($event.metaKey || $event.ctrlKey) && $event.keyCode == 13) {
-            $scope.endEditingAndSave(response);
+            $scope.save(response);
         }
     };
 
-    function updateResponse(response, cb) {
+    $scope.save = function (response) {
+        if (response.isNew) {
+            saveNew(response);
+            return;
+        }
+
+        saveExisting(response);
+    };
+
+    $scope.cancel = function (response) {
+        if (response.isNew) {
+            //Remove this from the array
+            _.remove($scope.responses, function (eachResponse) {
+                return eachResponse.uid == response.uid;
+            });
+
+            return;
+        }
+
+        // Existing - so cancel
+        cancelExistingEdit(response);
+    };
+
+    function createResponse(response, cb) {
+        var payload = removeClientSideState(response);
+
+        $http.post('/__response', payload).then(function (result) {
+            setCssClassName(response);
+            cb(null);
+        }).catch(function (err) {
+            cb(err);
+        });
+    }
+
+    function removeClientSideState(response) {
         const payload = _.cloneDeep(response);
         delete payload['jsonText'];
         delete payload['cssClassName'];
+        return payload;
+    }
+
+    function updateResponse(response, cb) {
+        var payload = removeClientSideState(response);
 
         $http.put('/__response', payload).then(function (result) {
             setCssClassName(response);
