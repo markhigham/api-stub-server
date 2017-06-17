@@ -17,25 +17,36 @@
     <script src='/node_modules/lodash/lodash.js'></script>
 </head>
 
-<body ng-app='stubApp' class="ng-cloak" ng-controller="ResponseController">
-
-    <nav class="navbar navbar-default navbar-inverse">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="#">
+<body ng-app='stubApp' class="ng-cloak">
+    <div ng-controller='NavbarController'>
+        <nav class="navbar navbar-default navbar-inverse">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">
                     api-stub-server {{version}}
                 </a>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a class='show-pointer'>&nbsp;<span class='glyphicon glyphicon-upload'></span>&nbsp;</a>
+                    </li>
+                    <li>
+                        <a class='show-pointer'>&nbsp;<span class='glyphicon glyphicon-download'></span>&nbsp;</a>
+                    </li>
+                    <li ng-class="{ active: jsonPreview }">
+                        <a class='show-pointer' ng-click='toggleJSONPreview()'>&nbsp;<span class='glyphicon glyphicon-th-list'></span>&nbsp;</a>
+                    </li>
 
+                </ul>
             </div>
-            <ul class="nav navbar-nav navbar-right">
-                <li><button class='btn btn-warning navbar-btn btn-xs'>New</button></li>
-                <li>&nbsp;</li>
-                <li><button type="button" class="btn btn-info navbar-btn btn-xs" data-toggle="button" aria-pressed="false"
-                        autocomplete="off" ng-click='toggleJSONPreview()'>Show JSON</button></li>
-            </ul>
+        </nav>
+        <div class='container'>
+        <div class='action-container'>
+            <button class='btn btn-success' ng-click='createNew()'><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Add new</button>
         </div>
-    </nav>
-    <div>
+        </div>
+    </div>
+    <div ng-controller="ResponseController">
         <div class="container">
             <div class="row">
                 <div class='col-md-12'>
@@ -44,8 +55,10 @@
                             <div ng-switch-when='false'>
                                 <p>
                                     <button class='btn btn-primary btn-xs' ng-click='startEditing(response)'>Edit</button>
-                                    <button class='btn btn-danger btn-xs' ng-click='delete(response)'>Delete</button>
-                                    <strong>{{ response.method}} {{ response.url }}</strong>&nbsp;
+                                    <button ng-if='!response.confirmDelete' class='animate-if btn btn-danger btn-xs' ng-click='promptDelete(response)'><span class=''></span> Delete</button>
+                                    <button ng-if='response.confirmDelete' class='btn btn-default btn-xs' ng-click='cancelDelete(response)'>Cancel</button>
+                                    <button ng-if='response.confirmDelete' class='btn btn-danger btn-xs' ng-click='delete(response)'><span class=''></span> Confirm</button>
+                                    <label ng-class='response.cssClassName' ng-click='startEditing(response)' class='show-pointer'>{{ response.method}} {{ response.url }}</label>
                                 </p>
                                 <pre ng-if='jsonPreview' ng-click='startEditing(response)' class='show-pointer'>{{ response.jsonText }}</pre>
                             </div>
@@ -67,13 +80,13 @@
                                     </div>
                                     <div class='form-group'>
                                         <div class='col-sm-12'>
-                                            <textarea class="form-control" style='font-family:monospace;' rows="10" ng-model='response.jsonText'></textarea>
+                                            <textarea id='editor_{{ response.uid }}' ng-keydown="jsonBodyKeyDown($event, response)" class="form-control" style='font-family:monospace;' rows="10" ng-model='response.jsonText'></textarea>
                                         </div>
                                     </div>
                                     <div class='form-group'>
                                         <div class='pull-right'>
-                                            <button class='btn btn-info' ng-click='endEditingAndSave()'>Update</button>
-                                            <button class='btn' ng-click='cancelEditing()'>Cancel</button>
+                                            <button class='btn btn-info' ng-click='endEditingAndSave(response)'>Update</button>
+                                            <button class='btn' ng-click='cancelEditing(response)'>Cancel</button>
 
                                             <br><br>
                                         </div>

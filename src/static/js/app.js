@@ -1,69 +1,176 @@
 var stubApp = angular.module('stubApp', ['LocalStorageModule']);
 
-stubApp.controller('ResponseController', function ($scope, $http) {
+stubApp.controller('NavbarController', function ($rootScope, $scope, ConfigService) {
 
-    let currentResponse;
+    $scope.toggleJSONPreview = function () {
+        $scope.jsonPreview = !$scope.jsonPreview;
+        ConfigService.set('jsonPreview', $scope.jsonPreview);
+        emitJsonPreviewState();
+    };
 
-    $scope.verbs = ['GET', 'POST', 'PUT'];
+    $scope.createNew = function () {
+        $rootScope.$broadcast('createNew');
+    };
+
+    $scope.upload = function () {
+        console.verbose('work in progress');
+    };
+
+    $scope.download = function () {
+        console.verbose('work in progress');
+    };
+
+    function emitJsonPreviewState() {
+        $rootScope.$broadcast('showPreview', $scope.jsonPreview);
+    }
+
+    function init() {
+        var preview = ConfigService.get('jsonPreview', true);
+        console.log(preview);
+        $scope.jsonPreview = preview;
+    }
+
+    init();
+
+});
+
+stubApp.service('ConfigService', function (localStorageService) {
+
+    function setValue(key, value) {
+        localStorageService.set(key, value);
+    }
+
+    function getValue(key, defaultValue) {
+        console.log(key, defaultValue);
+        var value = localStorageService.get(key);
+        console.log(typeof value, value);
+
+        if (typeof value !== 'undefined')
+            return value;
+
+        return defaultValue;
+    }
+
+    return {
+        set: setValue,
+        get: getValue
+    };
+
+});
+
+stubApp.controller('ResponseController', function ($scope, $http, ConfigService) {
+
+    $scope.responses = [];
+    $scope.verbs = ['get', 'post', 'put', 'delete'];
 
     function getFormattedJSON(o) {
         return JSON.stringify(o, null, 4);
     }
 
+    $scope.$on('showPreview', function ($event, isVisible) {
+        console.log('showpreview', isVisible);
+        $scope.jsonPreview = isVisible;
+    });
+
+    $scope.$on('createNew', function ($event) {
+        alert('work in progress');
+    });
+
     $scope.isEditing = function (response) {
-        return currentResponse == response;
+        return response.isEditing;
     };
 
     $scope.startEditing = function (response) {
-        currentResponse = response;
-        $scope.selectedResponse = response;
-        $scope.editing = true;
+        response.isEditing = true;
+        //Not really the angular way - but seems to work ;)
+        $scope.$$postDigest(function () {
+            var el = document.getElementById('editor_' + response.uid);
+            console.log(el);
+            if (el) {
+                el.focus();
+            }
+        });
     }
 
-    $scope.endEditingAndSave = function () {
+    $scope.endEditingAndSave = function (response) {
         // Update body from the json
-        const json = $scope.selectedResponse.jsonText;
+        const json = response.jsonText;
         const o = JSON.parse(json);
 
-        $scope.selectedResponse.body = o;
-        $scope.selectedResponse.jsonText = getFormattedJSON(o);
+        response.body = o;
+        response.jsonText = getFormattedJSON(o);
+        response.isEditing = false;
 
-        updateResponse($scope.selectedResponse, function (err) {
+        updateResponse(response, function (err) {
             if (err) {
                 console.error(err);
             }
-            currentResponse = undefined;
         });
     };
 
-    $scope.toggleJSONPreview = function () {
-        console.log('yay');
-        $scope.jsonPreview = !$scope.jsonPreview;
+    $scope.promptDelete = function (response) {
+        response.confirmDelete = true;
+    };
+
+    $scope.cancelDelete = function (response) {
+        delete response['confirmDelete'];
     };
 
     $scope.delete = function (response) {
-        var payload = { uid: response.uid };
-        $http.delete('/__response', payload).then(function (result) {
-            //yay
+        const uid = response.uid;
+        $http.delete('/__response/' + uid).then(function (result) {
+            _.remove($scope.responses, function (response) {
+                return uid == response.uid;
+            });
         }).catch(function (err) {
             console.error(err);
         })
     };
 
-    $scope.cancelEditing = function () {
-        currentResponse = undefined;
+    $scope.cancelEditing = function (response) {
+        response.isEditing = false;
         loadResponses();
     }
+
+    $scope.jsonBodyKeyDown = function ($event, response) {
+        if ($event.keyCode == 27) {
+            $scope.cancelEditing(response);
+            return;
+        }
+
+        if (($event.metaKey || $event.ctrlKey) && $event.keyCode == 13) {
+            $scope.endEditingAndSave(response);
+        }
+    };
 
     function updateResponse(response, cb) {
         const payload = _.cloneDeep(response);
         delete payload['jsonText'];
+        delete payload['cssClassName'];
+
         $http.put('/__response', payload).then(function (result) {
+            setCssClassName(response);
             cb(null);
         }).catch(function (err) {
             cb(err);
         });
+    }
 
+    function setCssClassName(response) {
+        switch (response.method) {
+            case 'delete':
+                response.cssClassName = 'text-danger';
+                break;
+
+            case 'get':
+                response.cssClassName = 'text-success';
+                break;
+
+            default:
+                delete response['cssClassName'];
+                break;
+
+        }
     }
 
     function loadResponses() {
@@ -72,6 +179,8 @@ stubApp.controller('ResponseController', function ($scope, $http) {
             const responses = [];
             _.each(response.data, function (response) {
                 response.jsonText = getFormattedJSON(response.body);
+                response.isEditing = false;
+                setCssClassName(response);
                 responses.push(response);
             })
 
@@ -82,6 +191,11 @@ stubApp.controller('ResponseController', function ($scope, $http) {
         });
     }
 
+    function restoreDefaults() {
+        $scope.jsonPreview = ConfigService.get('jsonPreview', true);
+    }
+
+    restoreDefaults();
     loadResponses();
 
 });

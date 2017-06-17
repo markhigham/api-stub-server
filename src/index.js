@@ -26,9 +26,14 @@ app.get('/__responses', (req, res) => {
     res.status(200).send(responseStack.asJSON());
 });
 
-app.delete('/__response', (req, res) => {
-    logger.verbose('delete', req.body);
-    res.status(500).send('work in progress');
+app.delete('/__response/:uid', (req, res) => {
+    logger.verbose('delete', req.params.uid);
+    responseStack.delete(req.params.uid).then(() => {
+        res.sendStatus(204);
+    }).catch(err => {
+        res.status(500).send(err);
+    });
+
 });
 
 app.put('/__response', (req, res) => {

@@ -1,4 +1,5 @@
 'use strict';
+const _ = require('lodash');
 
 function responseStack() {
     const logger = require('./logger')('response-stack');
@@ -9,6 +10,26 @@ function responseStack() {
     const hash = {};
 
     const self = {};
+
+    self.delete = function(uid){
+        var existing = hash[uid];
+
+        if(!existing){
+            const msg = `Could't find response with uid ${uid}`;
+            logger.error(msg);
+            return Promise.reject(msg);
+        }
+
+        logger.verbose(`found ${uid}`);
+        delete hash[uid];
+
+        _.remove(stack, item => {
+            return item.uid == uid;
+        });
+
+        //Yeah - this could be a sync call - but I may change the data to be stored somewhere else
+        return Promise.resolve();
+    }
 
     self.update = function (updatedResponse) {
         //find it

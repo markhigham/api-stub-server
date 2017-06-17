@@ -29,3 +29,7 @@
 .response:hover {
   background-color: #eee;
 }
+
+.action-container{
+  float:right;
+}
