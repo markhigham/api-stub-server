@@ -209,6 +209,8 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
         const payload = _.cloneDeep(response);
         delete payload['jsonText'];
         delete payload['cssClassName'];
+        delete payload['isEditing'];
+        delete payload['isNew'];
         return payload;
     }
 

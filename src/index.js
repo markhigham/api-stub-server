@@ -1,4 +1,5 @@
 'use strict';
+const moment = require('moment');
 
 const logger = require('./lib/logger')('/');
 const config = require('./config');
@@ -26,10 +27,18 @@ app.get('/__responses', (req, res) => {
     res.status(200).send(responseStack.asJSON());
 });
 
-app.get('/__responses/download', (req,res) => {
+app.get('/__responses/download', (req, res) => {
+    const now = moment.utc();
+    const filename = `api-stub-server-${now.format('YYYY-MM-DD-HHmm')}.json`;
+
     res.setHeader('Content-type', 'application/json');
-    res.setHeader('Content-disposition', 'attachment; filename=data.json');
+    res.setHeader('Content-disposition', `attachment; filename=${filename}`);
     res.send(responseStack.asJSON());
+});
+
+app.get('/__responses/upload', (req, res) => {
+    logger.verbose('work in progress');
+    res.sendStatus(202);
 });
 
 app.delete('/__response/:uid', (req, res) => {
@@ -39,17 +48,16 @@ app.delete('/__response/:uid', (req, res) => {
     }).catch(err => {
         res.status(500).send(err);
     });
-
 });
 
 app.post('/__response', (req, res) => {
     logger.verbose('creating new response', req.body);
-
-    responseStack.push(req.body).then(() => {
-        res.sendStatus(202);
-    }).catch(err => {
-        res.status(500).send(err);
-    });
+    const stubbedResponse = req.body;
+    const payload = new StubbedResponse(stubbedResponse.method, stubbedResponse.url,
+            stubbedResponse.body);
+    
+    responseStack.push(payload);
+    res.sendStatus(202);
 
 });
 

@@ -11,10 +11,10 @@ function responseStack() {
 
     const self = {};
 
-    self.delete = function(uid){
+    self.delete = function (uid) {
         var existing = hash[uid];
 
-        if(!existing){
+        if (!existing) {
             const msg = `Could't find response with uid ${uid}`;
             logger.error(msg);
             return Promise.reject(msg);
@@ -52,6 +52,8 @@ function responseStack() {
     };
 
     self.push = function (stubbedResponse) {
+
+        
         stack.push(stubbedResponse);
         hash[stubbedResponse.uid] = stubbedResponse;
         logger.verbose(hash);
@@ -63,7 +65,7 @@ function responseStack() {
 
     self.find = function (method, url) {
         let response = undefined;
-        
+
         //Find in the responses array
 
         for (let i = stack.length - 1; i >= 0; i--) {
@@ -73,8 +75,8 @@ function responseStack() {
             if (stub.isMatch(method, url)) {
                 logger.verbose(stub);
                 response = stub.body;
-                
-                if(response.usageType != 'persistent')
+
+                if (response.usageType != 'persistent')
                     stack.splice(i, 1);
 
                 break;
