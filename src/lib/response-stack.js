@@ -1,5 +1,6 @@
 'use strict';
 const _ = require('lodash');
+const StubbedResponse = require('./stubbed-response');
 
 function responseStack() {
     const logger = require('./logger')('response-stack');
@@ -18,8 +19,6 @@ function responseStack() {
 
         return Promise.resolve();
     };
-
-
 
     self.delete = function (uid) {
         var existing = hash[uid];
@@ -56,6 +55,7 @@ function responseStack() {
         existing.url = updatedResponse.url;
         existing.method = updatedResponse.method;
         existing.body = updatedResponse.body;
+        existing.usageType = updatedResponse.usageType;
 
         return Promise.resolve();
 
@@ -64,7 +64,11 @@ function responseStack() {
     self.addMany = function (values) {
         logger.verbose('addmany', values);
         _.each(values, value => {
-            self.push(value);
+
+            const response = new StubbedResponse(value.method, value.url, value.body, value.usageType);
+            response.uid = value.uid;
+
+            self.push(response);
         });
         return Promise.resolve();
     };
@@ -93,8 +97,10 @@ function responseStack() {
                 logger.verbose(stub);
                 response = stub.body;
 
-                if (response.usageType != 'persistent')
+                if (stub.usageType != 'persistent') {
+                    logger.verbose(`single use ${stub.uid}`);
                     stack.splice(i, 1);
+                }
 
                 break;
             }

@@ -12,16 +12,8 @@ stubApp.controller('NavbarController', function ($rootScope, $scope, ConfigServi
         $rootScope.$broadcast('createNew');
     };
 
-    $scope.showUploadForm = function(){
+    $scope.showUploadForm = function () {
         $('#uploadForm').modal();
-    };
-
-    $scope.upload = function () {
-        console.verbose('work in progress');
-    };
-
-    $scope.download = function () {
-        console.verbose('work in progress');
     };
 
     function emitJsonPreviewState() {
@@ -35,7 +27,6 @@ stubApp.controller('NavbarController', function ($rootScope, $scope, ConfigServi
     }
 
     init();
-
 });
 
 stubApp.service('ConfigService', function (localStorageService) {
@@ -45,9 +36,7 @@ stubApp.service('ConfigService', function (localStorageService) {
     }
 
     function getValue(key, defaultValue) {
-        console.log(key, defaultValue);
         var value = localStorageService.get(key);
-        console.log(typeof value, value);
 
         if (typeof value !== 'undefined')
             return value;
@@ -66,7 +55,7 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
 
     $scope.responses = [];
     $scope.verbs = ['get', 'post', 'put', 'delete'];
-    $scope.usageTypes = ['Persistent', 'Single Use'];
+    $scope.usageTypes = ['persistent', 'single'];
 
     function getFormattedJSON(o) {
         return JSON.stringify(o, null, 4);
@@ -80,11 +69,11 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
     $scope.$on('createNew', function ($event) {
         var response = {
             isEditing: true,
+            usageType: 'persistent',
             isNew: true,
             method: 'get',
             body: {},
             jsonText: "{}"
-
         };
 
         $scope.responses.unshift(response);
@@ -99,7 +88,6 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
         //Not really the angular way - but seems to work ;)
         $scope.$$postDigest(function () {
             var el = document.getElementById('editor_' + response.uid);
-            console.log(el);
             if (el) {
                 el.focus();
             }
@@ -112,7 +100,7 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
         const body = JSON.parse(json);
         response.body = body;
         response.jsonText = getFormattedJSON(body);
-
+        
         response.isEditing = false;
         response.isNew = false;
 
@@ -121,11 +109,9 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
                 console.error(err);
             }
         });
-
     }
 
     function saveExisting(response) {
-        // Update body from the json
         const json = response.jsonText;
         const o = JSON.parse(json);
 
@@ -190,7 +176,6 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
             _.remove($scope.responses, function (eachResponse) {
                 return eachResponse.uid == response.uid;
             });
-
             return;
         }
 
@@ -232,11 +217,11 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
     function setCssClassName(response) {
         switch (response.method) {
             case 'delete':
-                response.cssClassName = 'text-danger';
+                // response.cssClassName = 'text-danger';
                 break;
 
             case 'get':
-                response.cssClassName = 'text-success';
+                // response.cssClassName = 'text-success';
                 break;
 
             default:

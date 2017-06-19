@@ -39,21 +39,26 @@
   margin-right: 0.5em;
 }
 
+.actions-bar {
+    position: relative;
+}
+
 .actions-bar a {
   display:block;
+
 }
 
 .preview-container {
   position: relative;
 }
 
-.preview-container .toolbox-button {
+.actions-bar .toolbox-button {
   position: absolute;
   font-size: 18px;
   padding: 0.5em;
   right: 0;
   top: 0;
-  color: #ccc;
+  color: rgba(128,0,0,0.5);
   text-shadow: 1px 1px 1px #fff;
 }
 

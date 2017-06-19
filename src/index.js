@@ -80,7 +80,8 @@ app.post('/__response', (req, res) => {
     logger.verbose('creating new response', req.body);
     const stubbedResponse = req.body;
     const payload = new StubbedResponse(stubbedResponse.method, stubbedResponse.url,
-        stubbedResponse.body);
+        stubbedResponse.body, stubbedResponse.usageType);
+    
 
     responseStack.push(payload);
     res.sendStatus(202);
