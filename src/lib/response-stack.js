@@ -5,11 +5,21 @@ function responseStack() {
     const logger = require('./logger')('response-stack');
 
     //FIFO approach to storing the actual data
-    const stack = [];
+    let stack = [];
     //So we can look it up directly
-    const hash = {};
+    let hash = {};
 
     const self = {};
+
+    self.clear = function () {
+        logger.verbose('clearing current values');
+        stack = [];
+        hash = {};
+
+        return Promise.resolve();
+    };
+
+
 
     self.delete = function (uid) {
         var existing = hash[uid];
@@ -51,9 +61,16 @@ function responseStack() {
 
     };
 
-    self.push = function (stubbedResponse) {
+    self.addMany = function (values) {
+        logger.verbose('addmany', values);
+        _.each(values, value => {
+            self.push(value);
+        });
+        return Promise.resolve();
+    };
 
-        
+
+    self.push = function (stubbedResponse) {
         stack.push(stubbedResponse);
         hash[stubbedResponse.uid] = stubbedResponse;
         logger.verbose(hash);

@@ -8,7 +8,12 @@ const ResponseStack = require('./lib/response-stack');
 const StubbedResponse = require('./lib/stubbed-response');
 
 const express = require('express');
-const bodyParser = require('body-parser')
+const multer = require('multer');
+var storage = multer.memoryStorage()
+var upload = multer({ storage: storage })
+
+
+const bodyParser = require('body-parser');
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -23,6 +28,30 @@ app.get('/favicon.ico', (req, res) => {
 app.use('/__app', express.static('static'))
 app.use('/node_modules', express.static('node_modules'));
 
+app.post('/__responses/upload', upload.single('uploadJson'), (req, res) => {
+    
+    let uploadedData;
+    try {
+        var fileContents = req.file.buffer.toString();
+        uploadedData = JSON.parse(fileContents);
+    } catch (ex) {
+        res.status(500).send(ex);
+        return;
+    }
+
+    // So this must have parsed
+    responseStack.clear().then(() => {
+        return responseStack.addMany(uploadedData)
+    }).then(() => {
+        res.redirect('/__app');
+
+    }).catch(err => {
+        logger.error(err);
+        res.status(500).send(err);
+    });
+
+});
+
 app.get('/__responses', (req, res) => {
     res.status(200).send(responseStack.asJSON());
 });
@@ -36,10 +65,7 @@ app.get('/__responses/download', (req, res) => {
     res.send(responseStack.asJSON());
 });
 
-app.get('/__responses/upload', (req, res) => {
-    logger.verbose('work in progress');
-    res.sendStatus(202);
-});
+
 
 app.delete('/__response/:uid', (req, res) => {
     logger.verbose('delete', req.params.uid);
@@ -54,8 +80,8 @@ app.post('/__response', (req, res) => {
     logger.verbose('creating new response', req.body);
     const stubbedResponse = req.body;
     const payload = new StubbedResponse(stubbedResponse.method, stubbedResponse.url,
-            stubbedResponse.body);
-    
+        stubbedResponse.body);
+
     responseStack.push(payload);
     res.sendStatus(202);
 

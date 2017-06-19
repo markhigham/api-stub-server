@@ -22,13 +22,11 @@
         <nav class="navbar navbar-default navbar-inverse">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="/__app">
-                    api-stub-server {{version}}
-                </a>
+                    <a class="navbar-brand" href="/__app">api-stub-server {{version}}</a>
                 </div>
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a class='show-pointer'>&nbsp;<span class='glyphicon glyphicon-upload'></span>&nbsp;</a>
+                        <a class='show-pointer' ng-click='showUploadForm()'>&nbsp;<span class='glyphicon glyphicon-upload'></span>&nbsp;</a>
                     </li>
                     <li>
                         <a href='/__responses/download'>&nbsp;<span class='glyphicon glyphicon-download'></span>&nbsp;</a>
@@ -39,13 +37,42 @@
 
                 </ul>
             </div>
+
         </nav>
         <div class='container'>
             <div class='action-container'>
                 <button class='btn btn-success' ng-click='createNew()'><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Add new</button>
             </div>
         </div>
+        <input type='file' fileread='uploadMe' />
+        <pre>{{uploadMe}}</pre>
+        <div id='uploadForm' class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form action='/__responses/upload' method='post'  enctype="multipart/form-data">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Modal title</h4>
+                        </div>
+                        <div class="modal-body">
+                           
+                                <input type='file' name='uploadJson' />
+                          
+                            <p>One fine body&hellip;</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <input type="submit" class="btn btn-primary" value='Upload' />
+                        </div>
+                    </form>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
     </div>
+
     <div ng-controller="ResponseController">
         <div class="container">
             <div class="row">
