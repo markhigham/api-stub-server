@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
         crossorigin="anonymous">
@@ -36,9 +37,19 @@
                 </ul>
             </div>
         </nav>
+    </div>
+
+    <div ng-controller="ResponseController">
         <div class='container'>
-            <div class='action-container'>
-                <button class='btn btn-success' ng-click='createNew()'><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Add new</button>
+            <div class='row'>
+                <div class='col-md-9'>
+                    
+                </div>
+                <div class='col-md-3'>
+                    <div class='action-container'>
+                        <button class='btn btn-success' ng-click='createNew()'><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Add new</button>
+                    </div>
+                </div>
             </div>
         </div>
         <div id='uploadForm' class="modal" tabindex="-1" role="dialog">
@@ -60,9 +71,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div ng-controller="ResponseController">
         <div class="container">
             <div class="row">
                 <div class='col-md-12'>
@@ -73,7 +81,7 @@
                                     <span class='toolbox-button' ng-if='response.usageType == "single"'>
                                         <span class='glyphicon glyphicon-exclamation-sign' title='This is a single use response'></span>
                                     </span>
-                                   
+
                                     <button class='btn btn-primary btn-xs' ng-click='startEditing(response)'>Edit</button>
                                     <button ng-if='!response.confirmDelete' class='animate-if btn btn-danger btn-xs' ng-click='promptDelete(response)'><span class=''></span> Delete</button>
                                     <button ng-if='response.confirmDelete' class='btn btn-default btn-xs' ng-click='cancelDelete(response)'>Cancel</button>

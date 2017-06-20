@@ -8,9 +8,7 @@ stubApp.controller('NavbarController', function ($rootScope, $scope, ConfigServi
         emitJsonPreviewState();
     };
 
-    $scope.createNew = function () {
-        $rootScope.$broadcast('createNew');
-    };
+
 
     $scope.showUploadForm = function () {
         $('#uploadForm').modal();
@@ -66,7 +64,7 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
         $scope.jsonPreview = isVisible;
     });
 
-    $scope.$on('createNew', function ($event) {
+    $scope.createNew = function () {
         var response = {
             isEditing: true,
             usageType: 'persistent',
@@ -77,7 +75,7 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
         };
 
         $scope.responses.unshift(response);
-    });
+    };
 
     $scope.isEditing = function (response) {
         return response.isEditing;
@@ -100,7 +98,7 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
         const body = JSON.parse(json);
         response.body = body;
         response.jsonText = getFormattedJSON(body);
-        
+
         response.isEditing = false;
         response.isNew = false;
 

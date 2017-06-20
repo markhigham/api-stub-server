@@ -134,7 +134,7 @@ app.all('*', (req, res) => {
         return;
     }
 
-    const response = responseStack.find(method, url);
+    const response = responseStack.use(method, url);
 
     if (response) {
         res.status(200).send(response);

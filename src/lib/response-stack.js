@@ -85,9 +85,8 @@ function responseStack() {
         return stack.length;
     }
 
-    self.find = function (method, url) {
+    self.use = function (method, url) {
         let response = undefined;
-
         //Find in the responses array
 
         for (let i = stack.length - 1; i >= 0; i--) {
@@ -98,7 +97,7 @@ function responseStack() {
                 logger.verbose(stub);
                 response = stub.body;
 
-                if (stub.usageType != 'persistent') {
+                if (stub.usageType == 'single') {
                     logger.verbose(`single use ${stub.uid}`);
                     stack.splice(i, 1);
                 }
