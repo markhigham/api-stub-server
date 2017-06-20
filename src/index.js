@@ -64,8 +64,6 @@ app.get('/__responses/download', (req, res) => {
     res.send(responseStack.asJSON());
 });
 
-
-
 app.delete('/__response/:uid', (req, res) => {
     logger.verbose('delete', req.params.uid);
     responseStack.delete(req.params.uid).then(() => {

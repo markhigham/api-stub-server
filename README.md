@@ -5,6 +5,13 @@ Simple REST stub server
 
 Getting started
 
-  cd src
-  npm install
-  node index.js
+    cd src
+    npm install
+
+macOS / Linux
+    DEBUG=api* node index.js
+
+Windows
+
+    set DEBUG=api*
+    node index.js
