@@ -9,6 +9,7 @@ Getting started
     npm install
 
 macOS / Linux
+
     DEBUG=api* node index.js
 
 Windows
