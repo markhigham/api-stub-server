@@ -11,7 +11,8 @@ module.exports = function(name){
     return {
         log: log.log,
         verbose: log.verbose,
-        error: log.error
+        error: log.error,
+        info: log.info
     }
 
 };
