@@ -1,5 +1,6 @@
 'use strict';
 const uuidV4 = require('uuid/v4');
+const Route = require('route-parser');
 
 const logger = require('./logger')('stubbed-response');
 
@@ -14,10 +15,20 @@ function stubbedResponse(method, url, body, usageType) {
 stubbedResponse.prototype.isMatch = function (method, testUrl) {
     const lcaseMethod = method.toLowerCase();
     logger.verbose(`testing '${method} ${testUrl}' against '${this.method} ${this.url}'`)
-    const result =  (lcaseMethod == this.method && testUrl == this.url);
 
-    logger.verbose(result);
-    return result;
+    const route = new Route(this.url);
+    const routeMatch = route.match(testUrl);
+
+    if (!routeMatch) {
+        logger.verbose('routes do NOT match');
+        return false;
+    }
+
+    if (lcaseMethod != this.method){
+        logger.verbose('verbs do NOT match');
+        return false;
+    }
+    return true;
 }
 
 module.exports = stubbedResponse;

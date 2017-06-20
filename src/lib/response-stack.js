@@ -2,6 +2,7 @@
 const _ = require('lodash');
 const StubbedResponse = require('./stubbed-response');
 
+
 function responseStack() {
     const logger = require('./logger')('response-stack');
 
