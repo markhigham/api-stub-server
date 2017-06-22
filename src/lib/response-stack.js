@@ -59,7 +59,6 @@ function responseStack() {
         existing.usageType = updatedResponse.usageType;
 
         return Promise.resolve();
-
     };
 
     self.addMany = function (values) {
@@ -101,7 +100,7 @@ function responseStack() {
                     stack.splice(i, 1);
                 }
 
-                response = stub.processBody();
+                response = stub.interpolate();
                 break;
             }
         }

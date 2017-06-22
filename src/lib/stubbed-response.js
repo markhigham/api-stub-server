@@ -5,6 +5,7 @@ const Route = require('route-parser');
 const logger = require('./logger')('stubbed-response');
 
 function stubbedResponse(method, url, body, usageType) {
+    this.count = 0;
     this.method = method.toLowerCase();
     this.body = body;
     this.url = url;
@@ -31,11 +32,12 @@ stubbedResponse.prototype.isMatch = function (method, testUrl) {
     return true;
 };
 
-stubbedResponse.prototype.processBody = function () {
+stubbedResponse.prototype.interpolate = function () {
     const ticks = new Date().getTime();
-
+    const count = this.count++;
     const json = JSON.stringify(this.body);
-    const replaced = json.replace(/{{\$ticks}}/, ticks);
+    let replaced = json.replace(/{{\$ticks}}/, ticks);
+    replaced = replaced.replace(/{{\$count}}/, count);
 
     return JSON.parse(replaced);
 };
