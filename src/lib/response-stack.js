@@ -95,13 +95,13 @@ function responseStack() {
 
             if (stub.isMatch(method, url)) {
                 logger.verbose(stub);
-                response = stub.body;
 
                 if (stub.usageType == 'single') {
                     logger.verbose(`single use ${stub.uid}`);
                     stack.splice(i, 1);
                 }
 
+                response = stub.processBody();
                 break;
             }
         }

@@ -24,11 +24,20 @@ stubbedResponse.prototype.isMatch = function (method, testUrl) {
         return false;
     }
 
-    if (lcaseMethod != this.method){
+    if (lcaseMethod != this.method) {
         logger.verbose('verbs do NOT match');
         return false;
     }
     return true;
-}
+};
+
+stubbedResponse.prototype.processBody = function () {
+    const ticks = new Date().getTime();
+
+    const json = JSON.stringify(this.body);
+    const replaced = json.replace(/{{\$ticks}}/, ticks);
+
+    return JSON.parse(replaced);
+};
 
 module.exports = stubbedResponse;
