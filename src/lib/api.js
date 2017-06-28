@@ -8,9 +8,6 @@ const ResponseStack = require('./response-stack');
 const StubbedResponse = require('./stubbed-response');
 
 const express = require('express');
-const multer = require('multer');
-var storage = multer.memoryStorage()
-var upload = multer({ storage: storage })
 
 const bodyParser = require('body-parser');
 const app = express();
@@ -27,17 +24,17 @@ app.get('/favicon.ico', (req, res) => {
 app.use('/__app', express.static('static'))
 app.use('/node_modules', express.static('node_modules'));
 
-app.post('/__responses/upload', upload.single('uploadJson'), (req, res) => {
+app.post('/__responses/upload',  (req, res) => {
+    logger.verbose('upload', req.body);
     let uploadedData;
     try {
-        var fileContents = req.file.buffer.toString();
-        uploadedData = JSON.parse(fileContents);
+        uploadedData = req.body;
     } catch (ex) {
+        logger.error(ex);
         res.status(500).send(ex);
         return;
     }
 
-    // So this must have parsed
     responseStack.clear().then(() => {
         return responseStack.addMany(uploadedData)
     }).then(() => {

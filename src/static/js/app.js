@@ -1,6 +1,21 @@
 var stubApp = angular.module('stubApp', ['LocalStorageModule']);
 
-stubApp.controller('NavbarController', function ($rootScope, $scope, ConfigService) {
+stubApp.directive('inlineUpload', function () {
+    return {
+        restrict: 'A',
+        scope: {
+            select: '&onSelect'
+        },
+
+        link: function (scope, element, attr) {
+            element.bind('change', function () {
+                scope.select({ files: element[0].files });
+            });
+        }
+    };
+});
+
+stubApp.controller('NavbarController', function ($rootScope, $scope, ConfigService, $http) {
 
     $scope.toggleJSONPreview = function () {
         $scope.jsonPreview = !$scope.jsonPreview;
@@ -8,11 +23,30 @@ stubApp.controller('NavbarController', function ($rootScope, $scope, ConfigServi
         emitJsonPreviewState();
     };
 
-
-
-    $scope.showUploadForm = function () {
-        $('#uploadForm').modal();
+    $scope.clientUpload = function () {
+        $('#inlineUpload').click();
     };
+
+    $scope.handleFileSelect = function (files) {
+        if (!files.length)
+            return;
+
+        var reader = new FileReader();
+        reader.onloadend = function(e){
+            uploadJson(e.target.result).then(function(){
+                location.reload();
+            }).catch(function(err){
+                console.error(err);
+                alert('something went wrong check the console');
+            })
+        };
+
+        reader.readAsText(files[0]);
+    };
+
+    function uploadJson(json){
+        return $http.post('/__responses/upload',json);
+    }
 
     function emitJsonPreviewState() {
         $rootScope.$broadcast('showPreview', $scope.jsonPreview);
@@ -23,7 +57,6 @@ stubApp.controller('NavbarController', function ($rootScope, $scope, ConfigServi
         console.log(preview);
         $scope.jsonPreview = preview;
     }
-
     init();
 });
 

@@ -26,7 +26,7 @@
                 </div>
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a class='show-pointer' ng-click='showUploadForm()'>&nbsp;<span class='glyphicon glyphicon-upload'></span>&nbsp;</a>
+                        <a class='show-pointer' ng-click='clientUpload()'>&nbsp;<span class='glyphicon glyphicon-upload'></span>&nbsp;</a>
                     </li>
                     <li>
                         <a href='/__responses/download'>&nbsp;<span class='glyphicon glyphicon-download'></span>&nbsp;</a>
@@ -37,6 +37,7 @@
                 </ul>
             </div>
         </nav>
+        <input type='file' id='inlineUpload' accept='.json,.js' inline-upload on-select='handleFileSelect(files)' style='width:0;height:0;visibility:hidden;' />
     </div>
 
     <div ng-controller="ResponseController">
@@ -49,25 +50,6 @@
                     <div class='action-container'>
                         <button class='btn btn-success' ng-click='createNew()'><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Add new</button>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div id='uploadForm' class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <form action='/__responses/upload' method='post' enctype="multipart/form-data">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title">Upload saved responses</h4>
-                        </div>
-                        <div class="modal-body">
-                            <input type='file' name='uploadJson' />
-                        </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn btn-primary" value='Upload' />
-                            <button type="button" class="btn" data-dismiss="modal">Cancel</button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
