@@ -1,5 +1,5 @@
 'use strict';
-
+const path = require('path');
 const moment = require('moment');
 const logger = require('./logger')('api');
 const config = require('../config');
@@ -21,8 +21,8 @@ app.get('/favicon.ico', (req, res) => {
     res.sendStatus(404);
 });
 
-app.use('/__app', express.static('static'))
-app.use('/node_modules', express.static('node_modules'));
+app.use('/__app', express.static(path.join(__dirname + '/../static')));
+app.use('/node_modules', express.static(path.join(__dirname + '/../node_modules')));
 
 app.post('/__responses/upload',  (req, res) => {
     logger.verbose('upload', req.body);
@@ -114,7 +114,7 @@ app.all('/_:verb/*', (req, res) => {
 });
 
 app.all('*', (req, res) => {
-    logger.verbose(req.method, req.url);
+    logger.info(req.method, req.url);
     const method = req.method;
     const url = req.url;
 

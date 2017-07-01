@@ -1,17 +1,19 @@
 {
   "name": "api-stub-server",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "description": "Use this to stub REST api when testing",
-  "repository": "git@github.com:markhigham/api-stub-server",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:markhigham/api-stub-server"
+  },
   "main": "index.js",
-  "bin": "./bin/index.js",
+  "bin": {
+    "api-stub-server": "bin/api-stub-server.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Mark Higham",
-  "files": [
-    "static"
-  ],
   "license": "ISC",
   "dependencies": {
     "angular": "^1.6.4",
