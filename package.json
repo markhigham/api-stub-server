@@ -1,6 +1,6 @@
 {
   "name": "api-stub-server",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Use this to stub REST api when testing",
   "repository": {
     "type": "git",
