@@ -1,7 +1,22 @@
 # api-stub-server
-Simple REST stub server
+Simple http stub server
 
->Because I couldn't find one that did this within 30 seconds.
+    npm install -g api-stub-server
+
+    api-stub-server
+
+### Options
+
+
+
+### Stubbing a single HTTP request
+
+
+
+>Because I Googled this for 30 seconds and couldn't find anything.
+
+
+
 
 Getting started
 
