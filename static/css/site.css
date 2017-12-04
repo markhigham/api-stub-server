@@ -52,13 +52,17 @@
   position: relative;
 }
 
-.actions-bar .toolbox-button {
+.actions-bar .toolbox-button-container {
   position: absolute;
   font-size: 18px;
   padding: 0.5em;
   right: 0;
   top: 0;
-  color: rgba(128,0,0,0.5);
+  
+}
+
+.toolbox-button {
+  color: rgba(0, 141, 141, 0.692);
   text-shadow: 1px 1px 1px #fff;
 }
 
