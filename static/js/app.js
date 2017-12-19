@@ -32,10 +32,10 @@ stubApp.controller('NavbarController', function ($rootScope, $scope, ConfigServi
             return;
 
         var reader = new FileReader();
-        reader.onloadend = function(e){
-            uploadJson(e.target.result).then(function(){
+        reader.onloadend = function (e) {
+            uploadJson(e.target.result).then(function () {
                 location.reload();
-            }).catch(function(err){
+            }).catch(function (err) {
                 console.error(err);
                 alert('something went wrong check the console');
             })
@@ -44,8 +44,8 @@ stubApp.controller('NavbarController', function ($rootScope, $scope, ConfigServi
         reader.readAsText(files[0]);
     };
 
-    function uploadJson(json){
-        return $http.post('/__responses/upload',json);
+    function uploadJson(json) {
+        return $http.post('/__responses/upload', json);
     }
 
     function emitJsonPreviewState() {
@@ -96,6 +96,17 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
         console.log('showpreview', isVisible);
         $scope.jsonPreview = isVisible;
     });
+
+    $scope.purge = function () {
+        if (!confirm('Clear everything?'))
+            return;
+
+        $http.delete('/__responses/').then(function () {
+            $scope.responses = [];
+        }).catch(function (err) {
+            console.error(err);
+        });
+    };
 
     $scope.createNew = function () {
         var response = {
@@ -173,7 +184,7 @@ stubApp.controller('ResponseController', function ($scope, $http, ConfigService)
             });
         }).catch(function (err) {
             console.error(err);
-        })
+        });
     };
 
     function cancelExistingEdit(response) {

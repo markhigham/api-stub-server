@@ -54,6 +54,9 @@
                     <div class='action-container'>
                         <button class='btn btn-success' ng-click='createNew()'>
                             <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Add new</button>
+                       
+                            <button class='btn btn-danger' ng-click='purge()'>Clear</button>
+                       
                     </div>
                 </div>
             </div>
@@ -77,7 +80,8 @@
                                     <button ng-if='response.confirmDelete' class='btn btn-default btn-xs' ng-click='cancelDelete(response)'>Cancel</button>
                                     <button ng-if='response.confirmDelete' class='btn btn-danger btn-xs' ng-click='delete(response)'>
                                         <span class=''></span> Confirm</button>
-                                    <a ng-class='response.cssClassName' ng-click='startEditing(response)' class='show-pointer'><span class='badge'>{{ response.count }}</span> {{ response.method}} {{ response.url }}</a>
+                                    <a ng-class='response.cssClassName' ng-click='startEditing(response)' class='show-pointer'>
+                                        <span class='badge'>{{ response.count }}</span> {{ response.method}} {{ response.url }}</a>
                                 </p>
                                 <div ng-if='jsonPreview' class='preview-container'>
 
