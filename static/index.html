@@ -81,10 +81,9 @@
                                     <button ng-if='response.confirmDelete' class='btn btn-danger btn-xs' ng-click='delete(response)'>
                                         <span class=''></span> Confirm</button>
                                     <a ng-class='response.cssClassName' ng-click='startEditing(response)' class='show-pointer'>
-                                        <span class='badge'>{{ response.count }}</span> {{ response.method}} {{ response.url }}</a>
+                                        <span class='badge'>{{ response.count }}</span> {{ response.method}} {{ response.host }}{{ response.url }}</a>
                                 </p>
                                 <div ng-if='jsonPreview' class='preview-container'>
-
                                     <pre ng-click='startEditing(response)' class='show-pointer'>{{ response.jsonText }}</pre>
                                 </div>
                             </div>
@@ -97,7 +96,10 @@
                                             <select class='form-control' ng-model='response.method' ng-options='verb for verb in verbs'>
                                             </select>
                                         </div>
-                                        <div class='col-sm-8'>
+                                        <div class='col-sm-2'>
+                                            <input type='text' class='form-control' ng-model='response.host' />
+                                        </div>
+                                        <div class='col-sm-6'>
                                             <input type='text' class='form-control' ng-model="response.url" />
                                         </div>
                                         <div class='col-sm-2'>
