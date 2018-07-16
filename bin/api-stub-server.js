@@ -2,18 +2,17 @@
 
 process.env.DEBUG = process.env.DEBUG || "api*";
 
+const argv = require("minimist")(process.argv.slice(2));
+const debugLevel = argv.v || process.env.DEBUG_LEVEL || "info";
+process.env.DEBUG_LEVEL = debugLevel;
+
 const colors = require("colors");
 const app = require("../lib/api");
 const config = require("../config");
 const fs = require("fs");
 
-const argv = require("minimist")(process.argv.slice(2));
-
 const port = argv.p || config.port;
 const host = argv.h || config.host;
-const debugLevel = argv.v || process.env.DEBUG_LEVEL || "info";
-
-process.env.DEBUG_LEVEL = debugLevel;
 
 function showHelp() {
   console.log(`api-stub-server [-p 8092] [-h 127.0.0.1] [-v verbose] [saved_response_file.json]
