@@ -15,7 +15,11 @@ const port = argv.p || config.port;
 const host = argv.h || config.host;
 
 function showHelp() {
+  const pkg = require("../package.json");
+  const version = pkg.version;
   console.log(`api-stub-server [-p 8092] [-h 127.0.0.1] [-v verbose] [saved_response_file.json]
+version: ${version}
+
 -p  (Optional) Port number - defaults to 3001
 
 -h  (Optional) Host address - defaults to 0.0.0.0
