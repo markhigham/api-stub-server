@@ -26,6 +26,8 @@ version: ${version}
 
 -v  (Optional) Verbosity - choose from log, error, warn, debug, info, verbose
 
+-s  (Optional) Use sample data
+
 saved_response_file.json (optional)
     Path to a file containing pre-saved responses
 
@@ -51,6 +53,11 @@ app
   .start(port, host)
   .then(() => {
     console.log(`debugging is ${debugLevel}`);
+
+    if (argv.s) {
+      console.log("Using sample data");
+    }
+
     if (argv._.length === 0) {
       return;
     }
