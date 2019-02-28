@@ -56,6 +56,8 @@ app
 
     if (argv.s) {
       console.log("Using sample data");
+      const sample = require("./sample-data");
+      return app.upload(sample);
     }
 
     if (argv._.length === 0) {
