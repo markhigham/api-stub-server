@@ -61,6 +61,7 @@ stubApp.controller("NavbarController", function(
     var preview = ConfigService.get("jsonPreview", true);
     console.log(preview);
     $scope.jsonPreview = preview;
+    $scope.isRecording = true;
   }
   init();
 });

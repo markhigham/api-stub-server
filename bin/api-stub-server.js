@@ -17,7 +17,7 @@ const host = argv.h || config.host;
 function showHelp() {
   const pkg = require("../package.json");
   const version = pkg.version;
-  console.log(`api-stub-server [-p 8092] [-h 127.0.0.1] [-v verbose] [saved_response_file.json]
+  console.log(`api-stub-server [-p 8092] [-h 127.0.0.1] [-v verbose] [-s use sample data] [-r x] [saved_response_file.json]
 version: ${version}
 
 -p  (Optional) Port number - defaults to 3001
@@ -27,6 +27,9 @@ version: ${version}
 -v  (Optional) Verbosity - choose from log, error, warn, debug, info, verbose
 
 -s  (Optional) Use sample data
+
+-r  (Optional) Start recording requests to a limit of x 
+    Set to 0 for no limits.
 
 saved_response_file.json (optional)
     Path to a file containing pre-saved responses
@@ -53,6 +56,12 @@ app
   .start(port, host)
   .then(() => {
     console.log(`debugging is ${debugLevel}`);
+
+    if (argv.r) {
+      const limit = isNaN(argv.r) ? 0 : argv.r;
+      console.log(`recording ${limit} requests`);
+      app.startRecording(limit);
+    }
 
     if (argv.s) {
       console.log("Using sample data");
