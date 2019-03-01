@@ -68,19 +68,3 @@
   color: rgba(0, 141, 141, 0.692);
   text-shadow: 1px 1px 1px #fff;
 }
-
-@keyframes recording-in-progress {
-  0% {
-    color: #f00;
-  }
-  50% {
-    color: #000;
-  }
-  100% {
-    color: #f00;
-  }
-}
-
-.is-recording {
-  animation: recording-in-progress 2s infinite;
-}
