@@ -58,7 +58,8 @@ app
     console.log(`debugging is ${debugLevel}`);
 
     if (argv.r) {
-      const limit = isNaN(argv.r) ? 0 : argv.r;
+      let limit = isNaN(argv.r) ? 0 : argv.r;
+      if (limit === true) limit = -1;
       console.log(`recording ${limit} requests`);
       app.startRecording(limit);
     }
