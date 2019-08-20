@@ -25,15 +25,15 @@
     "debug-levels": "^0.2.0",
     "express": "^4.17.1",
     "install": "^0.13.0",
-    "lodash": "^4.17.14",
+    "lodash": "^4.17.15",
     "minimist": "^1.2.0",
     "moment": "^2.24.0",
-    "npm": "^6.10.1",
+    "npm": "^6.10.3",
     "route-parser": "0.0.5",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
-    "husky": "^3.0.0",
+    "husky": "^3.0.4",
     "prettier": "^1.18.2",
     "pretty-quick": "^1.11.1"
   },
