@@ -1,9 +1,9 @@
-'use strict'
-var _ = require('lodash');
+"use strict";
+var _ = require("lodash");
 
 var config = {
-    env: 'production',
+  env: "production",
 };
-config = _.merge({}, require('../base'), config);
+config = _.merge({}, require("../base"), config);
 
 module.exports = config;

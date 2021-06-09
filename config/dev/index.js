@@ -1,13 +1,12 @@
-'use strict'
-var _ = require('lodash');
+"use strict";
+var _ = require("lodash");
 
 var config = {
-    env: 'dev',
+  env: "dev",
 
-    requireAuth: false
-
+  requireAuth: false,
 };
 
-config = _.merge({}, require('../base'), config);
+config = _.merge({}, require("../base"), config);
 
 module.exports = config;

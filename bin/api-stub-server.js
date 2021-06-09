@@ -47,7 +47,7 @@ if (isNaN(port)) {
   process.exit(-1);
 }
 
-process.on("uncaughtException", err => {
+process.on("uncaughtException", (err) => {
   console.error("Something unexpected happened. See the error code below".red);
   console.error(err);
 });
@@ -84,7 +84,7 @@ app
   .then(() => {
     // started
   })
-  .catch(err => {
+  .catch((err) => {
     console.error("Something failed");
     process.exit(-1);
   });
