@@ -8,7 +8,7 @@ process.env.DEBUG_LEVEL = debugLevel;
 
 const colors = require("colors");
 const app = require("../lib/api");
-const config = require("../config");
+const config = require("../lib/config");
 const fs = require("fs");
 
 const port = argv.p || config.port;
