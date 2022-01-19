@@ -59,6 +59,10 @@ stubApp.controller(
       console.log(preview);
       $scope.jsonPreview = preview;
       $scope.isRecording = true;
+
+      $http.get("/__info").then((response) => {
+        $scope.version = response.data.buildNumber;
+      });
     }
     init();
   }
@@ -70,10 +74,8 @@ stubApp.service("ConfigService", function (localStorageService) {
   }
 
   function getValue(key, defaultValue) {
-    var value = localStorageService.get(key);
-
+    const value = localStorageService.get(key);
     if (typeof value !== "undefined") return value;
-
     return defaultValue;
   }
 
