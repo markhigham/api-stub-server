@@ -70,15 +70,22 @@ app
       return app.upload(sample);
     }
 
-    if (argv._.length === 0) {
-      return;
+    let filename;
+    if (process.env.SAVED_RESPONSE_FILE) {
+      console.log(`using ${process.env.SAVED_RESPONSE_FILE}`);
+      filename = process.env.SAVED_RESPONSE_FILE;
     }
 
-    const filename = argv._[0];
-    console.log(`using ${filename}`);
+    // This means that arg will override environment variable
+    if (argv._.length) {
+      filename = argv._[0];
+      console.log(`using ${filename}`);
+    }
 
-    var file = fs.readFileSync(filename, "utf8");
-    var json = JSON.parse(file);
+    if (!filename) return;
+
+    const file = fs.readFileSync(filename, "utf8");
+    const json = JSON.parse(file);
     return app.upload(json);
   })
   .then(() => {
@@ -86,5 +93,27 @@ app
   })
   .catch((err) => {
     console.error("Something failed");
+    console.error(err);
     process.exit(-1);
   });
+
+function stopApp() {
+  app
+    .stop()
+    .then((err) => {
+      if (err) {
+        console.error(err);
+        process.exit(1);
+      }
+
+      logger.debug("exiting");
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error(err);
+      process.exit(-1);
+    });
+}
+
+process.on("SIGINT", stopApp);
+process.on("SIGTERM", stopApp);
