@@ -1,6 +1,6 @@
 {
   "name": "api-stub-server",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "description": "Use this to stub REST api when testing",
   "repository": {
     "type": "git",
@@ -37,5 +37,4 @@
     "nodemon": "^2.0.15",
     "prettier": "^2.5.1"
   }
-
 }
