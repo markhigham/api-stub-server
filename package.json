@@ -12,10 +12,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "precommit": "pretty-quick --staged",
-    "debug": "DEBUG=api* nodemon index.js",
+    "debug": "LOG_LEVEL=debug nodemon index.js",
     "prettier": "prettier . --write",
-    "start": "DEBUG=api* node index.js"
+    "start": "node index.js"
   },
   "author": "Mark Higham",
   "license": "ISC",

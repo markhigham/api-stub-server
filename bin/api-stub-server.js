@@ -12,6 +12,8 @@ const fs = require("fs");
 const port = argv.p || config.port;
 const host = argv.h || config.host;
 
+const logger = require("../lib/logger")(__filename)
+
 function showHelp() {
   console.log(`api-stub-server [-p 8092] [-h 127.0.0.1] [-v verbose] [-s use sample data] [-r x] [saved_response_file.json]
 version: ${config.buildNumber}
@@ -51,7 +53,7 @@ process.on("uncaughtException", (err) => {
 app
   .start(port, host)
   .then(() => {
-    console.log(`debugging is ${debugLevel}`);
+    logger.info(`debugging is ${debugLevel}`);
 
     if (argv.r) {
       let limit = isNaN(argv.r) ? 0 : argv.r;
@@ -61,7 +63,7 @@ app
     }
 
     if (argv.s) {
-      console.log("Using sample data");
+      logger.info("Using sample data");
       const sample = require("./sample-data");
       return app.upload(sample);
     }
