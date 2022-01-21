@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-process.env.DEBUG = process.env.DEBUG || "api*";
-
 const argv = require("minimist")(process.argv.slice(2));
 const debugLevel = argv.v || process.env.DEBUG_LEVEL || "info";
 process.env.DEBUG_LEVEL = debugLevel;
@@ -15,16 +13,14 @@ const port = argv.p || config.port;
 const host = argv.h || config.host;
 
 function showHelp() {
-  const pkg = require("../package.json");
-  const version = pkg.version;
   console.log(`api-stub-server [-p 8092] [-h 127.0.0.1] [-v verbose] [-s use sample data] [-r x] [saved_response_file.json]
-version: ${version}
+version: ${config.buildNumber}
 
 -p  (Optional) Port number - defaults to 3001
 
 -h  (Optional) Host address - defaults to 0.0.0.0
 
--v  (Optional) Verbosity - choose from log, error, warn, debug, info, verbose
+-v  (Optional) Verbosity - choose from log, error, warn, debug, info
 
 -s  (Optional) Use sample data
 
@@ -106,7 +102,6 @@ function stopApp() {
         process.exit(1);
       }
 
-      logger.debug("exiting");
       process.exit(0);
     })
     .catch((err) => {
