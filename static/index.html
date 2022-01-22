@@ -94,21 +94,12 @@
             <div ng-switch-when="false">
               <p class="actions-bar">
                     <span class="toolbox-button-container">
-                      <span
-                        class="toolbox-button"
-                        ng-if='response.usageType == "single"'
-                      >
-                        <span
-                          class="glyphicon glyphicon-exclamation-sign"
-                          title="This is a single use response"
-                        ></span>
+                      <span class="toolbox-button" ng-if='response.usageType == "single"'>
+                        <span class="glyphicon glyphicon-exclamation-sign" title="This is a single use response"></span>
                       </span>
                     </span>
 
-                <button
-                  class="btn btn-primary btn-xs"
-                  ng-click="startEditing(response)"
-                >
+                <button class="btn btn-primary btn-xs" ng-click="startEditing(response)">
                   Edit
                 </button>
                 <button

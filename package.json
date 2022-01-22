@@ -12,7 +12,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "debug": "LOG_LEVEL=debug nodemon index.js",
+    "debug": "LOG_LEVEL=debug nodemon bin/api-stub-server.js -- -s",
     "prettier": "prettier . --write",
     "start": "node index.js"
   },
