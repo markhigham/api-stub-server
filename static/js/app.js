@@ -1,43 +1,43 @@
 var stubApp = angular.module("stubApp", ["LocalStorageModule"]);
 
-stubApp.directive("inlineUpload", function() {
+stubApp.directive("inlineUpload", function () {
   return {
     restrict: "A",
     scope: {
-      select: "&onSelect"
+      select: "&onSelect",
     },
 
-    link: function(scope, element, attr) {
-      element.bind("change", function() {
+    link: function (scope, element, attr) {
+      element.bind("change", function () {
         scope.select({ files: element[0].files });
       });
-    }
+    },
   };
 });
 
 stubApp.controller(
   "NavbarController",
-  function($rootScope, $scope, ConfigService, $http) {
-    $scope.toggleJSONPreview = function() {
+  function ($rootScope, $scope, ConfigService, $http) {
+    $scope.toggleJSONPreview = function () {
       $scope.jsonPreview = !$scope.jsonPreview;
       ConfigService.set("jsonPreview", $scope.jsonPreview);
       emitJsonPreviewState();
     };
 
-    $scope.clientUpload = function() {
+    $scope.clientUpload = function () {
       $("#inlineUpload").click();
     };
 
-    $scope.handleFileSelect = function(files) {
+    $scope.handleFileSelect = function (files) {
       if (!files.length) return;
 
       var reader = new FileReader();
-      reader.onloadend = function(e) {
+      reader.onloadend = function (e) {
         uploadJson(e.target.result)
-          .then(function() {
+          .then(function () {
             location.reload();
           })
-          .catch(function(err) {
+          .catch(function (err) {
             console.error(err);
             alert("something went wrong check the console");
           });
@@ -61,6 +61,7 @@ stubApp.controller(
 
       $http.get("/__info").then((response) => {
         $scope.version = response.data.buildNumber;
+        document.title = `${response.data.appName} ${response.data.buildNumber}`;
       });
     }
 
@@ -68,7 +69,7 @@ stubApp.controller(
   }
 );
 
-stubApp.service("ConfigService", function(localStorageService) {
+stubApp.service("ConfigService", function (localStorageService) {
   function setValue(key, value) {
     localStorageService.set(key, value);
   }
@@ -81,13 +82,13 @@ stubApp.service("ConfigService", function(localStorageService) {
 
   return {
     set: setValue,
-    get: getValue
+    get: getValue,
   };
 });
 
 stubApp.controller(
   "ResponseController",
-  function($scope, $http, ConfigService) {
+  function ($scope, $http, ConfigService) {
     $scope.responses = [];
     $scope.verbs = ["get", "post", "put", "delete", "patch"];
     $scope.usageTypes = ["persistent", "single"];
@@ -96,45 +97,45 @@ stubApp.controller(
       return JSON.stringify(o, null, 4);
     }
 
-    $scope.$on("showPreview", function($event, isVisible) {
+    $scope.$on("showPreview", function ($event, isVisible) {
       console.log("showpreview", isVisible);
       $scope.jsonPreview = isVisible;
     });
 
-    $scope.purge = function() {
+    $scope.purge = function () {
       if (!confirm("Clear everything?")) return;
 
       $http
         .delete("/__responses/")
-        .then(function() {
+        .then(function () {
           $scope.responses = [];
         })
-        .catch(function(err) {
+        .catch(function (err) {
           console.error(err);
         });
     };
 
-    $scope.createNew = function() {
+    $scope.createNew = function () {
       var response = {
         isEditing: true,
         usageType: "persistent",
         isNew: true,
         method: "get",
         body: {},
-        jsonText: "{}"
+        jsonText: "{}",
       };
 
       $scope.responses.unshift(response);
     };
 
-    $scope.isEditing = function(response) {
+    $scope.isEditing = function (response) {
       return response.isEditing;
     };
 
-    $scope.startEditing = function(response) {
+    $scope.startEditing = function (response) {
       response.isEditing = true;
       //Not really the angular way - but seems to work ;)
-      $scope.$$postDigest(function() {
+      $scope.$$postDigest(function () {
         var el = document.getElementById("editor_" + response.uid);
         if (el) {
           el.focus();
@@ -152,7 +153,7 @@ stubApp.controller(
       response.isEditing = false;
       response.isNew = false;
 
-      createResponse(response, function(err) {
+      createResponse(response, function (err) {
         if (err) {
           console.error(err);
         }
@@ -167,31 +168,31 @@ stubApp.controller(
       response.jsonText = getFormattedJSON(o);
       response.isEditing = false;
 
-      updateResponse(response, function(err) {
+      updateResponse(response, function (err) {
         if (err) {
           console.error(err);
         }
       });
     }
 
-    $scope.promptDelete = function(response) {
+    $scope.promptDelete = function (response) {
       response.confirmDelete = true;
     };
 
-    $scope.cancelDelete = function(response) {
+    $scope.cancelDelete = function (response) {
       delete response["confirmDelete"];
     };
 
-    $scope.delete = function(response) {
+    $scope.delete = function (response) {
       const uid = response.uid;
       $http
         .delete("/__response/" + uid)
-        .then(function(result) {
-          _.remove($scope.responses, function(response) {
+        .then(function (result) {
+          _.remove($scope.responses, function (response) {
             return uid == response.uid;
           });
         })
-        .catch(function(err) {
+        .catch(function (err) {
           console.error(err);
         });
     };
@@ -201,7 +202,7 @@ stubApp.controller(
       loadResponses();
     }
 
-    $scope.jsonBodyKeyDown = function($event, response) {
+    $scope.jsonBodyKeyDown = function ($event, response) {
       if ($event.keyCode == 27) {
         $scope.cancel(response);
         return;
@@ -212,7 +213,7 @@ stubApp.controller(
       }
     };
 
-    $scope.save = function(response) {
+    $scope.save = function (response) {
       if (response.isNew) {
         saveNew(response);
         return;
@@ -221,10 +222,10 @@ stubApp.controller(
       saveExisting(response);
     };
 
-    $scope.cancel = function(response) {
+    $scope.cancel = function (response) {
       if (response.isNew) {
         //Remove this from the array
-        _.remove($scope.responses, function(eachResponse) {
+        _.remove($scope.responses, function (eachResponse) {
           return eachResponse.uid == response.uid;
         });
         return;
@@ -239,11 +240,11 @@ stubApp.controller(
 
       $http
         .post("/__response", payload)
-        .then(function(result) {
+        .then(function (result) {
           setCssClassName(response);
           cb(null);
         })
-        .catch(function(err) {
+        .catch(function (err) {
           cb(err);
         });
     }
@@ -262,11 +263,11 @@ stubApp.controller(
 
       $http
         .put("/__response", payload)
-        .then(function(result) {
+        .then(function (result) {
           setCssClassName(response);
           cb(null);
         })
-        .catch(function(err) {
+        .catch(function (err) {
           cb(err);
         });
     }
@@ -291,13 +292,20 @@ stubApp.controller(
       $http
         .get("/__responses")
         .then((response) => {
-          const responses = [];
-          _.each(response.data, function(response) {
-            response.jsonText = getFormattedJSON(response.body);
-            response.isEditing = false;
-            setCssClassName(response);
-            responses.push(response);
-          });
+          const responses = response.data
+            .map((response) => {
+              response.jsonText = getFormattedJSON(response.body);
+              response.isEditing = false;
+              setCssClassName(response);
+
+              return response;
+            })
+            .sort((a, b) => {
+              const first = a.url.toLocaleLowerCase();
+              const second = b.url.toLocaleLowerCase();
+
+              return first.localeCompare(second);
+            });
 
           $scope.responses = responses;
         })

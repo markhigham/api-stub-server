@@ -6,7 +6,7 @@ const sampleData = [
     method: "get",
     body: {
       text: "This matches against /api/value/1 or /api/value/xyx",
-      timestamp: "Number of ticks since app started {{$ticks}}",
+      timestamp: "Current timestamp {{$ticks}}",
       count: "How many times this url was called {{$count}}",
       uid: "A node uuidv4  - {{$uid}}",
     },
