@@ -48,7 +48,7 @@ process.on("uncaughtException", (err) => {
 app
   .start(port, host)
   .then(() => {
-    logger.info(`log level ${process.env.LOG_LEVEL}`);
+    logger.info(`log level ${config.logLevel}`);
 
     if (argv.r) {
       let limit = isNaN(argv.r) ? 0 : argv.r;
