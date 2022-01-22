@@ -23,6 +23,8 @@ version: ${config.buildNumber}
 
 -r  (Optional) Start recording requests to a limit of x 
     Set to 0 for no limits.
+    
+-e  (Optional) Echo any route params to the JSON response - defaults to false
 
 saved_response_file.json (optional)
     Path to a file containing pre-saved responses
@@ -33,6 +35,11 @@ saved_response_file.json (optional)
 if (argv.h) {
   showHelp();
   process.exit(0);
+}
+
+if (argv.e || process.env.ECHO_ROUTE_PARAMS) {
+  logger.info("Echoing route params to response");
+  config.echoRouteParams = true;
 }
 
 if (isNaN(port)) {
