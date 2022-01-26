@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "debug": "nodemon dist/index.js",
+    "debug": "LOG_LEVEL=debug nodemon dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier": "prettier . --write",
     "start": "node dist/index.js"

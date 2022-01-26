@@ -1,5 +1,9 @@
 import * as winston from "winston";
+// import { createLogger, format, transports } from "winston";
+// const { combine, timestamp, label, printf, json } = format;
+
 import * as path from "path";
+import { format } from "winston";
 // import { getRootPath } from "../paths";
 
 export interface ILogger {
@@ -14,6 +18,20 @@ export interface ILogger {
   verbose(...any): void;
 }
 
+const myFormat = winston.format.printf(
+  ({ level, message, label, timestamp, name }) => {
+    let messageText = message;
+    if (typeof message === "object") {
+      try {
+        messageText = JSON.stringify(message);
+      } catch (ex) {
+        // do nothing - messageText is already set to [object Object]
+      }
+    }
+    return `${timestamp} [${name}] ${level}: ${messageText}`;
+  }
+);
+
 export class LogManager {
   static logger: winston.Logger;
   static logLevel: string;
@@ -22,31 +40,8 @@ export class LogManager {
     this.logLevel = process.env.LOG_LEVEL || "info";
     const logger = winston.createLogger({
       level: this.logLevel,
-      format: winston.format.combine(
-        winston.format.errors({ stack: true }),
+      format: winston.format.combine(format.timestamp(), myFormat),
 
-        winston.format.colorize(),
-        winston.format.simple(),
-        winston.format.metadata(),
-
-        winston.format.printf((loginfo) => {
-          let json = "Error!";
-          let stack = "";
-          try {
-            if (typeof loginfo.message === "object")
-              json = JSON.stringify(loginfo.message, null, 2);
-            else json = loginfo.message;
-
-            if (loginfo.metadata.stack) {
-              stack = loginfo.metadata.stack;
-            }
-          } catch (e) {
-            console.error("failed to stringify error");
-            // console.error(e);
-          }
-          return `${loginfo.metadata.name} ${loginfo.level} ${json}${stack}`;
-        })
-      ),
       transports: [
         new winston.transports.Console({
           stderrLevels: ["error"],
