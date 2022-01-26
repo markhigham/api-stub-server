@@ -1,8 +1,6 @@
-"use strict";
+const pkg = require("../../package.json");
 
-const pkg = require("../package.json");
-
-const config = {
+export const config = {
   appName: pkg.name,
   buildNumber: pkg.version,
   env: "base",
@@ -11,5 +9,3 @@ const config = {
   logLevel: process.env.LOG_LEVEL || "info",
   echoRouteParams: false,
 };
-
-module.exports = config;
