@@ -20,22 +20,4 @@ To start using some simple sample data
 
     curl http://localhost/api/value/1
 
-### Options
 
-### Stubbing a single HTTP request
-
-> Because I Googled this for 30 seconds and couldn't find anything.
-
-Getting started
-
-    cd src
-    npm install
-
-macOS / Linux
-
-    DEBUG=api* node index.js
-
-Windows
-
-    set DEBUG=api*
-    node index.js
