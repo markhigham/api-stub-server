@@ -1,7 +1,5 @@
 import * as path from "path";
 
-import * as moment from "moment";
-
 import { config } from "./config";
 import { LogManager } from "./logger";
 import { Responses } from "./responses";
@@ -9,6 +7,7 @@ import { Response } from "./response";
 
 import * as express from "express";
 import * as bodyParser from "body-parser";
+import { createManagementRouter } from "./routes/responseManagement";
 
 const logger = LogManager.getLogger(__filename);
 
@@ -28,8 +27,6 @@ const responseStack = new Responses();
 app.get("/favicon.ico", (req, res) => {
   res.sendStatus(404);
 });
-
-import { createManagementRouter } from "./routes/responseManagement";
 
 const managementRouter = createManagementRouter(responseStack, "/__app");
 
