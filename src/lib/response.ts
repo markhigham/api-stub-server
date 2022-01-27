@@ -6,13 +6,14 @@ import * as clone from "clone";
 import { ILogger, LogManager } from "./logger";
 import { config } from "./config";
 
-interface IResponse {
+export interface IResponse {
   count: number;
   method: string;
   body: any;
   url: string;
   usageType: string;
   uid: string;
+  interpolate(matchResult: { [p: string]: string }): IResponse;
 }
 
 export interface IMatchResult {
@@ -58,7 +59,7 @@ export class Response implements IResponse {
     return { isMatch: true, routeMatch: routeMatch };
   }
 
-  interpolate(matchResult: { [p: string]: string }) {
+  interpolate(matchResult: { [p: string]: string }): IResponse {
     const ticks = new Date().getTime().toString();
     const count = String(this.count++);
 
