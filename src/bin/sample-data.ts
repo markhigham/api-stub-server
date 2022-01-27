@@ -1,6 +1,4 @@
-"use strict";
-
-const sampleData = [
+export const sampleData = [
   {
     count: 0,
     method: "get",
@@ -31,5 +29,3 @@ const sampleData = [
     uid: "d3425cfb-1e4b-4f4a-af3c-bdc52546c976",
   },
 ];
-
-module.exports = sampleData;

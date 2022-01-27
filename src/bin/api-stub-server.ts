@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 
-const argv = require("minimist")(process.argv.slice(2));
+import * as minimist from "minimist";
+import { Api } from "../lib/api";
+import { config } from "../lib/config";
+import { LogManager } from "../lib/logger";
+import { sampleData } from "./sample-data";
+import * as fs from "fs";
 
-const app = require("../lib/api");
-const config = require("../lib/config");
-const fs = require("fs");
+const argv = minimist(process.argv.slice(2));
 
 const port = argv.p || config.port;
 const host = argv.h || config.host;
 
-const logger = require("../lib/logger")(__filename);
+const logger = LogManager.getLogger(__filename);
 
 function showHelp() {
   console.log(`api-stub-server [-p 8092] [-h 127.0.0.1] [-v verbose] [-s use sample data] [-r x] [saved_response_file.json]
@@ -52,6 +55,8 @@ process.on("uncaughtException", (err) => {
   console.error(err);
 });
 
+const app = new Api();
+
 app
   .start(port, host)
   .then(() => {
@@ -66,8 +71,7 @@ app
 
     if (argv.s) {
       logger.info("Using sample data");
-      const sample = require("./sample-data");
-      return app.upload(sample);
+      return app.upload(sampleData);
     }
 
     let filename;
