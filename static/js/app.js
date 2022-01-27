@@ -47,7 +47,7 @@ stubApp.controller(
     };
 
     function uploadJson(json) {
-      return $http.post("/__responses/upload", json);
+      return $http.post("/__response/upload", json);
     }
 
     function emitJsonPreviewState() {
@@ -106,7 +106,7 @@ stubApp.controller(
       if (!confirm("Clear everything?")) return;
 
       $http
-        .delete("/__responses/")
+        .delete("/__response/")
         .then(function () {
           $scope.responses = [];
         })
@@ -290,7 +290,7 @@ stubApp.controller(
 
     function loadResponses() {
       $http
-        .get("/__responses")
+        .get("/__response")
         .then((response) => {
           const responses = response.data
             .map((response) => {

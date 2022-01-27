@@ -11,6 +11,14 @@ export class Responses {
     this.responses = {};
   }
 
+  asJSON() {
+    const responses: IResponse[] = [];
+    for (const [key, value] of Object.entries(this.responses)) {
+      responses.push(value);
+    }
+    return responses;
+  }
+
   clear(): Promise<void> {
     this.logger.debug("clearing all values");
     this.responses = {};
@@ -72,12 +80,16 @@ export class Responses {
     const route = new Route(response.url);
     const routeMatch = route.match(url);
 
+    this.logger.debug(
+      `checking ${lowercaseMethod} ${url} against ${response.method} ${response.url}`
+    );
+
     if (!routeMatch) {
       this.logger.debug("routes do not match");
       return { isMatch: false };
     }
 
-    if (lowercaseMethod != response.method) {
+    if (lowercaseMethod != response.method.toLowerCase()) {
       this.logger.debug("verbs do not match");
       return { isMatch: false };
     }
