@@ -1,21 +1,19 @@
-import * as path from "path";
-
 import { config } from "./config";
 import { LogManager } from "./logger";
-import { InMemoryResponseStore } from "./inMemoryResponseStore";
+import { MemoryStore } from "./datastores/memoryStore";
 import { Response } from "./response";
 
 import * as express from "express";
 import * as bodyParser from "body-parser";
 
-import { createManagementRouter } from "./routes/responseManagement";
+import { createManagementRouter } from "./routes/admin";
 import * as bearerToken from "express-bearer-token";
 import { ResponseInterpolator } from "./interpolator";
-import { IResponseStore } from "./interfaces";
+import { IResponseStore, USAGE_TYPE_SINGLE } from "./interfaces";
+import { createStaticRouter } from "./routes/static";
 
 const logger = LogManager.getLogger(__filename);
 
-const app = express();
 const serverDetails = {
   host: "",
   port: 0,
@@ -25,28 +23,30 @@ const serverDetails = {
 // a value of 0 means no recording
 let recordingCounter = 0;
 
+function tenantMiddleware(req, res, next) {
+  req.tenant = req.token || "";
+  next();
+}
+
+const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(bearerToken());
+app.use(tenantMiddleware);
 
-const responseCollection: IResponseStore = new InMemoryResponseStore();
+const responseCollection: IResponseStore = new MemoryStore();
 
 app.get("/favicon.ico", (req, res) => {
   res.sendStatus(404);
 });
 
-// The front end website is served from the /static folder
-// we re-use node_modules for some of the dependencies which needs some rethinking
-app.use("/__app", express.static(path.join(__dirname + "/../../static")));
-app.use(
-  "/node_modules",
-  express.static(path.join(__dirname + "/../../node_modules"))
-);
-
 app.get("/__info", (req, res) => {
   res.status(200).send(config);
 });
+
+const staticRouter = createStaticRouter();
+app.use("/", staticRouter);
 
 const managementRouter = createManagementRouter(responseCollection, "/__app");
 app.use("/__response", managementRouter);
@@ -57,7 +57,7 @@ app.use("/__response", managementRouter);
  * POST /_GET/api/v1/  { 'hello' : 'world' }
  * will create a new GET response at /api/v1 which returns the helloworld json
  */
-app.all("/_:verb/*", async (req, res) => {
+app.all("/_:verb/*", async (req: any, res) => {
   if (req.method !== "POST") {
     logger.error("this only works with POSTS!");
     res.status(400).send("only POST works to setup return values");
@@ -66,7 +66,7 @@ app.all("/_:verb/*", async (req, res) => {
 
   const verb = req.params.verb;
   const triggerUrl = req.url.replace("/_" + verb, "");
-  const tenant = req.token || "";
+  const tenant = req.tenant || "";
   logger.debug(`${verb} ${triggerUrl}`);
 
   await responseCollection.push(
@@ -80,11 +80,11 @@ app.all("/_:verb/*", async (req, res) => {
   res.json(response);
 });
 
-app.all("*", async (req, res) => {
+/**
+ * just allow all cors requests and ignore any options pre-flight checks
+ */
+app.use((req, res, next) => {
   const method = req.method;
-  const url = req.url;
-  const tenant = req.token || "";
-
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
   res.header(
@@ -93,9 +93,18 @@ app.all("*", async (req, res) => {
   );
 
   if (method == "OPTIONS") {
-    res.status(200).send("oh yes... options");
+    res.status(200).send("aah yes... options");
+    res.end();
     return;
   }
+
+  next();
+});
+
+app.all("*", async (req: any, res) => {
+  const method = req.method;
+  const url = req.url;
+  const tenant = req.tenant || "";
 
   logger.debug(`looking for ${method} ${url} on tenant ${tenant}`);
 
@@ -107,7 +116,7 @@ app.all("*", async (req, res) => {
 
   logger.debug(response);
 
-  if (response && response.usageType == "single") {
+  if (response && response.usageType == USAGE_TYPE_SINGLE) {
     logger.info("delete single use");
     await responseCollection.delete(response.uid);
   }

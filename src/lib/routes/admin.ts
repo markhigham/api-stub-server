@@ -3,7 +3,6 @@ import * as moment from "moment";
 import { Response } from "../response";
 
 import { LogManager } from "../logger";
-import { InMemoryResponseStore } from "../inMemoryResponseStore";
 import { IResponseStore } from "../interfaces";
 
 const logger = LogManager.getLogger(__filename);
@@ -80,9 +79,9 @@ export function createManagementRouter(
     res.send(await store.asJSON());
   });
 
-  router.post("/", async (req, res) => {
+  router.post("/", async (req: any, res) => {
     logger.debug("creating new response", req.body);
-    const tenant = req.token || "";
+    const tenant = req.tenant || "";
     const stubbedResponse = req.body;
     const payload = new Response(
       stubbedResponse.method,

@@ -1,3 +1,6 @@
+export const USAGE_TYPE_SINGLE = "single";
+export const USAGE_TYPE_PERSISTENT = "persistent";
+
 export interface IResponse {
   count: number;
   method: string;
@@ -12,6 +15,7 @@ export interface IMatchResult {
   isMatch: boolean;
   routeMatch?: { [p: string]: string };
 }
+
 export interface IResponseStore {
   asJSON(): Promise<IResponse[]>;
   clear(): Promise<void>;

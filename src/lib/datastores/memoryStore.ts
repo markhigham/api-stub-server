@@ -1,10 +1,10 @@
-import { Response } from "./response";
+import { Response } from "../response";
 
-import { ILogger, LogManager } from "./logger";
+import { ILogger, LogManager } from "../logger";
 import * as Route from "route-parser";
-import { IMatchResult, IResponse, IResponseStore } from "./interfaces";
+import { IMatchResult, IResponse, IResponseStore } from "../interfaces";
 
-export class InMemoryResponseStore implements IResponseStore {
+export class MemoryStore implements IResponseStore {
   private readonly logger: ILogger;
   private responses: { [key: string]: IResponse };
   constructor() {
@@ -51,6 +51,7 @@ export class InMemoryResponseStore implements IResponseStore {
     found.method = response.method;
     found.body = response.body;
     found.usageType = response.usageType;
+    found.tenant = response.tenant;
 
     return Promise.resolve();
   }

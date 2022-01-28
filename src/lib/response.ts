@@ -1,10 +1,8 @@
 import * as uuid from "uuid";
 
-import { ILogger, LogManager } from "./logger";
-import { IResponse } from "./interfaces";
+import { IResponse, USAGE_TYPE_PERSISTENT } from "./interfaces";
 
 export class Response implements IResponse {
-  private readonly logger: ILogger;
   body: any;
   count: number = 0;
   tenant: string;
@@ -17,10 +15,9 @@ export class Response implements IResponse {
     method: string,
     url: string,
     body: any,
-    usageType: string = "persistent",
+    usageType: string = USAGE_TYPE_PERSISTENT,
     tenant: string = ""
   ) {
-    this.logger = LogManager.getLogger(__filename);
     this.usageType = usageType;
 
     this.method = method.toLowerCase();
