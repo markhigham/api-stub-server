@@ -3,14 +3,15 @@ import * as moment from "moment";
 import { Response } from "../response";
 
 import { LogManager } from "../logger";
-import { Responses } from "../responses";
+import { InMemoryResponseStore } from "../inMemoryResponseStore";
+import { IResponseStore } from "../interfaces";
 
 const logger = LogManager.getLogger(__filename);
 
 const router = Router();
 
 export function createManagementRouter(
-  responseStack: Responses,
+  store: IResponseStore,
   appRoutePath: string
 ) {
   router.post("/upload", (req, res) => {
@@ -25,10 +26,10 @@ export function createManagementRouter(
       return;
     }
 
-    responseStack
+    store
       .clear()
       .then(() => {
-        return responseStack.addMany(uploadedData);
+        return store.addMany(uploadedData);
       })
       .then(() => {
         res.redirect(appRoutePath);
@@ -39,14 +40,14 @@ export function createManagementRouter(
       });
   });
 
-  router.get("/", (req, res) => {
+  router.get("/", async (req, res) => {
     logger.info(`200 GET /__response`);
-    res.status(200).send(responseStack.asJSON());
+    res.status(200).send(await store.asJSON());
   });
 
   router.delete("/:uid", (req, res) => {
     logger.debug(`delete ${req.params.uid}`);
-    responseStack
+    store
       .delete(req.params.uid)
       .then(() => {
         res.sendStatus(204);
@@ -59,7 +60,7 @@ export function createManagementRouter(
 
   router.delete("/", (req, res) => {
     logger.debug("deleting all saved responses");
-    responseStack
+    store
       .clear()
       .then(() => {
         res.sendStatus(204);
@@ -70,33 +71,35 @@ export function createManagementRouter(
       });
   });
 
-  router.get("/download", (req, res) => {
+  router.get("/download", async (req, res) => {
     const now = moment.utc();
     const filename = `api-stub-server-${now.format("YYYY-MM-DD-HHmm")}.json`;
 
     res.setHeader("Content-type", "application/json");
     res.setHeader("Content-disposition", `attachment; filename=${filename}`);
-    res.send(responseStack.asJSON());
+    res.send(await store.asJSON());
   });
 
-  router.post("/", (req, res) => {
+  router.post("/", async (req, res) => {
     logger.debug("creating new response", req.body);
+    const tenant = req.token || "";
     const stubbedResponse = req.body;
     const payload = new Response(
       stubbedResponse.method,
       stubbedResponse.url,
       stubbedResponse.body,
-      stubbedResponse.usageType
+      stubbedResponse.usageType,
+      tenant
     );
 
-    responseStack.push(payload);
+    await store.push(payload);
     res.sendStatus(202);
   });
 
   router.put("/", (req, res) => {
     logger.debug("updating response", req.body);
 
-    responseStack
+    store
       .update(req.body)
       .then(() => {
         res.sendStatus(204);
