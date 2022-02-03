@@ -20,4 +20,7 @@ To start using some simple sample data
 
     curl http://localhost/api/value/1
 
+# Docker
+
+    npm run debug
 
