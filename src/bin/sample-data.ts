@@ -2,7 +2,7 @@ export const sampleData = [
   {
     count: 0,
     method: "get",
-    tenant: "test",
+    tenant: "",
     body: {
       text: "This matches against /api/value/1 or /api/value/xyx",
       timestamp: "Current timestamp {{$ticks}}",
