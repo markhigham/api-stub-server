@@ -65,7 +65,8 @@ export class MemoryStore implements IResponseStore {
         r.url,
         r.body,
         r.usageType,
-        r.tenant || ""
+        r.tenant || "",
+        r.statusCode || 200,
       );
       response.uid = r.uid;
       this.responses[response.uid] = response;
