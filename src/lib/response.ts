@@ -4,6 +4,7 @@ import { IResponse, USAGE_TYPE_PERSISTENT } from "./interfaces";
 
 export class Response implements IResponse {
   body: any;
+  statusCode: number = 200;
   count: number = 0;
   tenant: string;
   method: string;
@@ -16,7 +17,8 @@ export class Response implements IResponse {
     url: string,
     body: any,
     usageType: string = USAGE_TYPE_PERSISTENT,
-    tenant: string = ""
+    tenant: string = "",
+    statusCode: number = 200
   ) {
     this.usageType = usageType;
 
@@ -24,7 +26,7 @@ export class Response implements IResponse {
     this.url = url;
     this.body = body;
     this.tenant = tenant.toLowerCase();
-
+    this.statusCode = statusCode;
     this.uid = uuid.v4();
   }
 }

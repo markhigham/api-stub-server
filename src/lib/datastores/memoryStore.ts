@@ -52,6 +52,7 @@ export class MemoryStore implements IResponseStore {
     found.body = response.body;
     found.usageType = response.usageType;
     found.tenant = response.tenant;
+    found.statusCode = response.statusCode;
 
     return Promise.resolve();
   }

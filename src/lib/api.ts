@@ -130,8 +130,8 @@ app.all("*", async (req: any, res) => {
       tenant
     );
 
-    logger.info(`200 ${method} ${req.url} ${tenant}`);
-    res.status(200).send(body);
+    logger.info(`${response.statusCode} ${method} ${req.url} ${tenant}`);
+    res.status(response.statusCode).send(body);
     return;
   }
 

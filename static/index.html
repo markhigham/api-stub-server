@@ -129,7 +129,7 @@
                   class="show-pointer"
                 >
                   <span class="badge">{{ response.count }}</span>
-                  {{ response.tenant }} {{ response.method }} {{ response.url }}</a
+                  {{ response.tenant }} {{ response.method }} {{ response.url }} {{ response.statusCode }}</a
                 >
               </p>
               <div ng-if="jsonPreview" class="preview-container">
@@ -146,14 +146,15 @@
                   <div class="col-sm-2">
                     <select class="form-control" ng-model="response.method" ng-options="verb for verb in verbs"></select>
                   </div>
-                  <div class="col-sm-2">
-                    <input type="text" placeholder="tenant name" class="form-control" ng-model="response.tenant" />
-                  </div>
-                  <div class="col-sm-6">
+                  <div class="col-sm-7">
+                    <input type="hidden" placeholder="tenant name" class="form-control" ng-model="response.tenant" />
                     <input type="text" class="form-control" ng-model="response.url" />
                   </div>
                   <div class="col-sm-2">
                     <select class="form-control" ng-model="response.usageType" ng-options="type for type in usageTypes"></select>
+                  </div>
+                  <div class="col-sm-1">
+                    <input type="text" class="form-control" ng-model="response.statusCode" />
                   </div>
                 </div>
                 <div class="form-group">

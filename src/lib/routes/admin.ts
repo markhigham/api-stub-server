@@ -88,7 +88,8 @@ export function createManagementRouter(
       stubbedResponse.url,
       stubbedResponse.body,
       stubbedResponse.usageType,
-      tenant
+      tenant,
+      stubbedResponse.statusCode
     );
 
     await store.push(payload);

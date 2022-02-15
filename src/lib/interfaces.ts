@@ -3,6 +3,7 @@ export const USAGE_TYPE_PERSISTENT = "persistent";
 
 export interface IResponse {
   count: number;
+  statusCode: number;
   method: string;
   tenant: string;
   body: any;
