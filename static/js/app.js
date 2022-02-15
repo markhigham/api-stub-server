@@ -259,6 +259,7 @@ stubApp.controller(
     }
 
     function updateResponse(response, cb) {
+      console.log(response);
       var payload = removeClientSideState(response);
 
       $http

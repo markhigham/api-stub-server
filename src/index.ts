@@ -1,4 +1,5 @@
 import "source-map-support/register";
+
 import { config } from "./lib/config";
 import { LogManager } from "./lib/logger";
 

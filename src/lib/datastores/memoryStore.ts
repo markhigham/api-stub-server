@@ -1,9 +1,10 @@
-import { IMatchResult, IResponse, Response } from "./response";
+import { Response } from "../response";
 
-import { ILogger, LogManager } from "./logger";
+import { ILogger, LogManager } from "../logger";
 import * as Route from "route-parser";
+import { IMatchResult, IResponse, IResponseStore } from "../interfaces";
 
-export class Responses {
+export class MemoryStore implements IResponseStore {
   private readonly logger: ILogger;
   private responses: { [key: string]: IResponse };
   constructor() {
@@ -11,12 +12,12 @@ export class Responses {
     this.responses = {};
   }
 
-  asJSON() {
+  asJSON(): Promise<IResponse[]> {
     const responses: IResponse[] = [];
     for (const [key, value] of Object.entries(this.responses)) {
       responses.push(value);
     }
-    return responses;
+    return Promise.resolve(responses);
   }
 
   clear(): Promise<void> {
@@ -33,6 +34,7 @@ export class Responses {
       return Promise.reject(msg);
     }
 
+    this.logger.debug(`deleting ${uid}`);
     delete this.responses[uid];
     return Promise.resolve();
   }
@@ -49,13 +51,21 @@ export class Responses {
     found.method = response.method;
     found.body = response.body;
     found.usageType = response.usageType;
+    found.tenant = response.tenant;
 
     return Promise.resolve();
   }
 
-  addMany(responses: any[]) {
+  addMany(responses: any[]): Promise<void> {
     responses.forEach((r) => {
-      const response = new Response(r.method, r.url, r.body, r.usageType);
+      this.logger.debug(r.tenant);
+      const response = new Response(
+        r.method,
+        r.url,
+        r.body,
+        r.usageType,
+        r.tenant || ""
+      );
       response.uid = r.uid;
       this.responses[response.uid] = response;
     });
@@ -63,25 +73,30 @@ export class Responses {
     return Promise.resolve();
   }
 
-  push(response: IResponse) {
+  push(response: IResponse): Promise<void> {
     this.responses[response.uid] = response;
+    return Promise.resolve();
   }
 
   getCount(): number {
     return Object.keys(this.responses).length;
   }
 
+  private compare(first: string, second: string) {
+    return first.localeCompare(second, undefined, { sensitivity: "base" }) == 0;
+  }
+
   private isMatch(
     response: IResponse,
     method: string,
-    url: string
+    url: string,
+    tenant: string
   ): IMatchResult {
-    const lowercaseMethod = method.toLowerCase();
     const route = new Route(response.url);
     const routeMatch = route.match(url);
 
     this.logger.debug(
-      `checking ${lowercaseMethod} ${url} against ${response.method} ${response.url}`
+      `checking ${method} ${url} '${tenant}' against ${response.method} ${response.url} '${response.tenant}'`
     );
 
     if (!routeMatch) {
@@ -89,30 +104,37 @@ export class Responses {
       return { isMatch: false };
     }
 
-    if (lowercaseMethod != response.method.toLowerCase()) {
+    if (!this.compare(method, response.method)) {
       this.logger.debug("verbs do not match");
       return { isMatch: false };
     }
 
+    if (!this.compare(tenant, response.tenant)) {
+      this.logger.debug("tenants do not match");
+      return { isMatch: false };
+    }
+
+    this.logger.debug(response);
     return { isMatch: true, routeMatch: routeMatch };
   }
 
-  use(method: string, url: string) {
+  find(
+    method: string,
+    url: string,
+    tenant: string
+  ): Promise<[IResponse, IMatchResult]> {
     let response: IResponse = undefined;
+    let matchResult: IMatchResult = undefined;
 
     for (const [key, value] of Object.entries(this.responses)) {
-      const matchResult = this.isMatch(value, method, url);
+      matchResult = this.isMatch(value, method, url, tenant);
 
       if (matchResult.isMatch) {
-        if (value.usageType == "single") {
-          delete this.responses[value.uid];
-        }
-
-        response = value.interpolate(matchResult.routeMatch);
+        response = value;
         break;
       }
     }
 
-    return response;
+    return Promise.resolve([response, matchResult]);
   }
 }

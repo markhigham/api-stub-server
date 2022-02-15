@@ -1,6 +1,6 @@
 {
   "name": "api-stub-server",
-  "version": "0.1.30",
+  "version": "0.1.32",
   "description": "Use this to stub REST api when testing",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc -w",
-    "debug": "LOG_LEVEL=debug nodemon dist/bin/api-stub-server.js",
+    "debug": "LOG_LEVEL=debug nodemon dist/bin/api-stub-server.js -- -s",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier": "prettier . --write",
     "start": "node dist/index.js"
@@ -26,6 +26,7 @@
     "body-parser": "^1.19.1",
     "clone": "^2.1.2",
     "express": "^4.17.2",
+    "express-bearer-token": "^2.4.0",
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
     "moment": "^2.29.1",
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@types/clone": "^2.1.1",
+    "@types/express": "^4.17.13",
     "@types/node": "^17.0.12",
     "@types/route-parser": "^0.1.4",
     "nodemon": "^2.0.15",

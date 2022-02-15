@@ -1,46 +1,55 @@
-import * as path from "path";
-
 import { config } from "./config";
 import { LogManager } from "./logger";
-import { Responses } from "./responses";
+import { MemoryStore } from "./datastores/memoryStore";
 import { Response } from "./response";
 
 import * as express from "express";
 import * as bodyParser from "body-parser";
-import { createManagementRouter } from "./routes/responseManagement";
+
+import { createManagementRouter } from "./routes/admin";
+import * as bearerToken from "express-bearer-token";
+import { ResponseInterpolator } from "./interpolator";
+import { IResponseStore, USAGE_TYPE_SINGLE } from "./interfaces";
+import { createStaticRouter } from "./routes/static";
 
 const logger = LogManager.getLogger(__filename);
 
-const app = express();
 const serverDetails = {
   host: "",
   port: 0,
 };
 
-let recordCount = 0; //0 is off
+// Set to > 0 if we should record incoming requests
+// a value of 0 means no recording
+let recordingCounter = 0;
 
+function tenantMiddleware(req, res, next) {
+  req.tenant = req.token || "";
+  next();
+}
+
+const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const responseStack = new Responses();
+app.use(bearerToken());
+app.use(tenantMiddleware);
+
+const responseCollection: IResponseStore = new MemoryStore();
 
 app.get("/favicon.ico", (req, res) => {
   res.sendStatus(404);
 });
 
-const managementRouter = createManagementRouter(responseStack, "/__app");
-
-app.use("/__app", express.static(path.join(__dirname + "/../../static")));
-app.use(
-  "/node_modules",
-  express.static(path.join(__dirname + "/../../node_modules"))
-);
-
-app.use("/__response", managementRouter);
-
 app.get("/__info", (req, res) => {
   res.status(200).send(config);
 });
+
+const staticRouter = createStaticRouter();
+app.use("/", staticRouter);
+
+const managementRouter = createManagementRouter(responseCollection, "/__app");
+app.use("/__response", managementRouter);
 
 /**
  * Any POST sent to /_ will be handled as an attempt to seed another response
@@ -48,7 +57,7 @@ app.get("/__info", (req, res) => {
  * POST /_GET/api/v1/  { 'hello' : 'world' }
  * will create a new GET response at /api/v1 which returns the helloworld json
  */
-app.all("/_:verb/*", (req, res) => {
+app.all("/_:verb/*", async (req: any, res) => {
   if (req.method !== "POST") {
     logger.error("this only works with POSTS!");
     res.status(400).send("only POST works to setup return values");
@@ -56,12 +65,13 @@ app.all("/_:verb/*", (req, res) => {
   }
 
   const verb = req.params.verb;
-
   const triggerUrl = req.url.replace("/_" + verb, "");
+  const tenant = req.tenant || "";
   logger.debug(`${verb} ${triggerUrl}`);
 
-  responseStack.push(new Response(verb, triggerUrl, req.body));
-  logger.debug(`responseStack contains ${responseStack.getCount()} values`);
+  await responseCollection.push(
+    new Response(verb, triggerUrl, req.body, "persistent", tenant)
+  );
 
   const response = {
     triggerUrl: triggerUrl,
@@ -70,11 +80,11 @@ app.all("/_:verb/*", (req, res) => {
   res.json(response);
 });
 
-app.all("*", (req, res) => {
+/**
+ * just allow all cors requests and ignore any options pre-flight checks
+ */
+app.use((req, res, next) => {
   const method = req.method;
-  const url = req.url;
-  logger.debug(`looking for ${method} ${url}`);
-
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
   res.header(
@@ -83,28 +93,62 @@ app.all("*", (req, res) => {
   );
 
   if (method == "OPTIONS") {
-    res.status(200).send("oh yes... options");
+    res.status(200).send("aah yes... options");
+    res.end();
     return;
   }
 
-  if (responseStack.getCount() > 0) {
-    const response = responseStack.use(method, url);
-    if (response) {
-      logger.debug(response);
-      logger.info(`200 ${method} ${req.url}`);
-      res.status(200).send(response);
-      return;
-    }
+  next();
+});
+
+app.all("*", async (req: any, res) => {
+  const method = req.method;
+  const url = req.url;
+  const tenant = req.tenant || "";
+
+  logger.debug(`looking for ${method} ${url} on tenant ${tenant}`);
+
+  const [response, matchResult] = await responseCollection.find(
+    method,
+    url,
+    tenant
+  );
+
+  logger.debug(response);
+
+  if (response && response.usageType == USAGE_TYPE_SINGLE) {
+    logger.info("delete single use");
+    await responseCollection.delete(response.uid);
+  }
+
+  if (response) {
+    logger.debug(response);
+
+    const body = ResponseInterpolator.interpolate(
+      response,
+      matchResult.routeMatch,
+      tenant
+    );
+
+    logger.info(`200 ${method} ${req.url} ${tenant}`);
+    res.status(200).send(body);
+    return;
   }
 
   // Not found
-  if (recordCount != 0) {
-    recordCount--;
-    logger.debug(`recordCount ${recordCount}`);
+  if (recordingCounter != 0) {
+    recordingCounter--;
+    logger.debug(`recordCount ${recordingCounter}`);
     const stubbedResponse = req.body;
-    const payload = new Response(req.method, req.url, req.body);
+    const payload = new Response(
+      req.method,
+      req.url,
+      req.body,
+      "persistent",
+      tenant
+    );
 
-    responseStack.push(payload);
+    responseCollection.push(payload);
     res.sendStatus(200);
     return;
   }
@@ -114,15 +158,10 @@ app.all("*", (req, res) => {
   res.status(404).send(failMessage);
 });
 
-function start(port, host): Promise<void> {
+function start(port: number, host: string): Promise<void> {
   logger.debug(`starting ${host}:${port}`);
   return new Promise((resolve, reject) => {
-    app.listen(port, host, (err) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-
+    app.listen(port, host, () => {
       logger.info(`started on http://${host}:${port}`);
       serverDetails.host = host;
       serverDetails.port = port;
@@ -144,11 +183,11 @@ export class Api {
   }
 
   upload(savedData) {
-    return responseStack.addMany(savedData);
+    return responseCollection.addMany(savedData);
   }
 
   startRecording(limit) {
     logger.info(`recording ${limit} requests`);
-    recordCount = limit;
+    recordingCounter = limit;
   }
 }

@@ -2,11 +2,13 @@ export const sampleData = [
   {
     count: 0,
     method: "get",
+    tenant: "",
     body: {
       text: "This matches against /api/value/1 or /api/value/xyx",
       timestamp: "Current timestamp {{$ticks}}",
       count: "How many times this url was called {{$count}}",
       uid: "A node uuidv4  - {{$uid}}",
+      tenant: "The tenant name {{$tenant}}",
     },
     url: "/api/value/:id",
     usageType: "persistent",
@@ -23,7 +25,12 @@ export const sampleData = [
   {
     count: 0,
     method: "delete",
-    body: {},
+    body: {
+      text: "This matches against /api/value/1 or /api/value/xyx",
+      timestamp: "Current timestamp {{$ticks}}",
+      count: "How many times this url was called {{$count}}",
+      uid: "A node uuidv4  - {{$uid}}",
+    },
     url: "/api/value/:id",
     usageType: "single",
     uid: "d3425cfb-1e4b-4f4a-af3c-bdc52546c976",
