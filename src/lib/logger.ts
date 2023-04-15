@@ -1,10 +1,7 @@
 import * as winston from "winston";
-// import { createLogger, format, transports } from "winston";
-// const { combine, timestamp, label, printf, json } = format;
 
 import * as path from "path";
 import { format } from "winston";
-// import { getRootPath } from "../paths";
 
 export interface ILogger {
   debug(...any): void;
