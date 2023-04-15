@@ -31,6 +31,12 @@ version: ${config.buildNumber}
 
 saved_response_file.json (optional)
     Path to a file containing pre-saved responses
+    
+-----
+Environment variables
+PORT: Port number
+SAVED_RESPONSE_FILE: Path to a file containing pre-saved responses 
+ECHO_ROUTE_PARAMS: Echo and route params back to the response
 
     `);
 }
