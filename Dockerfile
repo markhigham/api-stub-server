@@ -14,7 +14,7 @@ COPY --from=base /app/static /app/static
 COPY package*.json ./
 RUN npm install --production
 
-COPY ./dist ./
+COPY --from=base /app/dist ./
 
 EXPOSE 3001
 
