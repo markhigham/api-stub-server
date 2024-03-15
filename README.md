@@ -23,4 +23,3 @@ To start using some simple sample data
 # Docker
 
     npm run debug
-

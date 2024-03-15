@@ -1,69 +1,68 @@
-import * as winston from "winston";
-
-import * as path from "path";
-import { format } from "winston";
+import * as path from 'path'
+import * as winston from 'winston'
+import { format } from 'winston'
 
 export interface ILogger {
-  debug(...any): void;
+  debug(...any): void
 
-  error(...any): void;
+  error(...any): void
 
-  info(...any): void;
+  info(...any): void
 
-  warn(...any): void;
+  warn(...any): void
 
-  verbose(...any): void;
+  verbose(...any): void
 }
 
 const myFormat = winston.format.printf(
   ({ level, message, label, timestamp, name }) => {
-    let messageText = message;
-    if (typeof message === "object") {
+    let messageText = message
+    if (typeof message === 'object') {
       try {
-        messageText = JSON.stringify(message);
+        messageText = JSON.stringify(message)
       } catch (ex) {
         // do nothing - messageText is already set to [object Object]
       }
     }
-    return `${timestamp} [${name}] ${level}: ${messageText}`;
+    return `${timestamp} [${name}] ${level}: ${messageText}`
   },
-);
+)
 
 export class LogManager {
-  static logger: winston.Logger;
-  static logLevel: string;
+  static logger: winston.Logger
+  static logLevel: string
 
   private static makeLogger(): winston.Logger {
-    this.logLevel = process.env.LOG_LEVEL || "info";
+    this.logLevel = process.env.LOG_LEVEL || 'info'
     const logger = winston.createLogger({
       level: this.logLevel,
       format: winston.format.combine(format.timestamp(), myFormat),
 
       transports: [
         new winston.transports.Console({
-          stderrLevels: ["error"],
+          stderrLevels: ['error'],
         }),
       ],
-    });
+    })
 
-    return logger;
+    return logger
   }
 
   static getLogger(filename: string): ILogger {
     // const root = getRootPath();
-    let name = path.basename(filename);
+    let name = path.basename(filename)
 
-    if (typeof this.logger === "undefined") {
-      this.logger = this.makeLogger();
+    if (typeof this.logger === 'undefined') {
+      this.logger = this.makeLogger()
     }
-    return this.logger.child({ filename: filename, name: name });
+    return this.logger.child({ filename: filename, name: name })
   }
 
   static getNamedLogger(name: string): ILogger {
-    if (typeof this.logger === "undefined") {
-      this.logger = this.makeLogger();
+    if (typeof this.logger === 'undefined') {
+      this.logger = this.makeLogger()
     }
 
-    return this.logger.child({ service: name });
+    return this.logger.child({ service: name })
   }
 }
