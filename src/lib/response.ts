@@ -18,7 +18,7 @@ export class Response implements IResponse {
     body: any,
     usageType: string = USAGE_TYPE_PERSISTENT,
     tenant: string = "",
-    statusCode: number = 200
+    statusCode: number = 200,
   ) {
     this.usageType = usageType;
 

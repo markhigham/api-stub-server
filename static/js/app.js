@@ -66,7 +66,7 @@ stubApp.controller(
     }
 
     init();
-  }
+  },
 );
 
 stubApp.service("ConfigService", function (localStorageService) {
@@ -321,5 +321,5 @@ stubApp.controller(
 
     restoreDefaults();
     loadResponses();
-  }
+  },
 );

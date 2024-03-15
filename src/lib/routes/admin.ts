@@ -11,7 +11,7 @@ const router = Router();
 
 export function createManagementRouter(
   store: IResponseStore,
-  appRoutePath: string
+  appRoutePath: string,
 ) {
   router.post("/upload", (req, res) => {
     logger.info("200 POST /__responses/upload");
@@ -89,7 +89,7 @@ export function createManagementRouter(
       stubbedResponse.body,
       stubbedResponse.usageType,
       tenant,
-      stubbedResponse.statusCode
+      stubbedResponse.statusCode,
     );
 
     await store.push(payload);

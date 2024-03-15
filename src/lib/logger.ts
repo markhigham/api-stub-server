@@ -26,7 +26,7 @@ const myFormat = winston.format.printf(
       }
     }
     return `${timestamp} [${name}] ${level}: ${messageText}`;
-  }
+  },
 );
 
 export class LogManager {

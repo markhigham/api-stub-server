@@ -1,205 +1,248 @@
 <html>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <head>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
 
-  <link
-    href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-    rel="stylesheet"
-    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-    crossorigin="anonymous"
-  />
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
 
-  <link href="css/site.css" type="text/css" rel="stylesheet" />
+    <link href="css/site.css" type="text/css" rel="stylesheet" />
 
-  <script
-    src="https://code.jquery.com/jquery-3.2.1.min.js"
-    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-    crossorigin="anonymous"
-  ></script>
-  <script
-    src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-    crossorigin="anonymous"
-  ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+      integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+      crossorigin="anonymous"
+    ></script>
 
-  <script src="/node_modules/angular/angular.min.js"></script>
-  <script src="/node_modules/angular-local-storage/dist/angular-local-storage.js"></script>
-  <script src="/node_modules/lodash/lodash.js"></script>
-</head>
+    <script src="/node_modules/angular/angular.min.js"></script>
+    <script src="/node_modules/angular-local-storage/dist/angular-local-storage.js"></script>
+    <script src="/node_modules/lodash/lodash.js"></script>
+  </head>
 
-<body ng-app="stubApp" class="ng-cloak">
-<div ng-controller="NavbarController">
-  <nav class="navbar navbar-default navbar-inverse">
-    <div class="container">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="/__app"
-        >api-stub-server {{ version }}</a
-        >
-      </div>
-      <ul class="nav navbar-nav navbar-right">
-        <li>
-          <a class="show-pointer" ng-click="clientUpload()" title="Upload a saved response file"
-          >&nbsp;
-            <span class="glyphicon glyphicon-upload"></span>&nbsp;</a
-          >
-        </li>
-        <li>
-          <a href="/__response/download" title="Download all responses"
-          >&nbsp;
-            <span class="glyphicon glyphicon-download"></span>&nbsp;</a
-          >
-        </li>
-        <li ng-class="{ active: jsonPreview }">
-          <a class="show-pointer" ng-click="toggleJSONPreview()" title="Toggle JSON previews">&nbsp;
-            <span class="glyphicon glyphicon-th-list"></span>&nbsp;</a
-          >
-        </li>
-      </ul>
+  <body ng-app="stubApp" class="ng-cloak">
+    <div ng-controller="NavbarController">
+      <nav class="navbar navbar-default navbar-inverse">
+        <div class="container">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="/__app"
+              >api-stub-server {{ version }}</a
+            >
+          </div>
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a
+                class="show-pointer"
+                ng-click="clientUpload()"
+                title="Upload a saved response file"
+                >&nbsp;
+                <span class="glyphicon glyphicon-upload"></span>&nbsp;</a
+              >
+            </li>
+            <li>
+              <a href="/__response/download" title="Download all responses"
+                >&nbsp;
+                <span class="glyphicon glyphicon-download"></span>&nbsp;</a
+              >
+            </li>
+            <li ng-class="{ active: jsonPreview }">
+              <a
+                class="show-pointer"
+                ng-click="toggleJSONPreview()"
+                title="Toggle JSON previews"
+                >&nbsp;
+                <span class="glyphicon glyphicon-th-list"></span>&nbsp;</a
+              >
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <input
+        type="file"
+        id="inlineUpload"
+        accept=".json,.js"
+        inline-upload
+        on-select="handleFileSelect(files)"
+        style="width: 0; height: 0; visibility: hidden"
+      />
     </div>
-  </nav>
-  <input
-    type="file"
-    id="inlineUpload"
-    accept=".json,.js"
-    inline-upload
-    on-select="handleFileSelect(files)"
-    style="width: 0; height: 0; visibility: hidden"
-  />
-</div>
 
-<div ng-controller="ResponseController">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-9"></div>
-      <div class="col-md-3">
-        <div class="action-container">
-          <button class="btn btn-success" ng-click="createNew()">
+    <div ng-controller="ResponseController">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-9"></div>
+          <div class="col-md-3">
+            <div class="action-container">
+              <button class="btn btn-success" ng-click="createNew()">
                 <span
                   class="glyphicon glyphicon-plus-sign"
                   aria-hidden="true"
                 ></span
                 >&nbsp;Add new
-          </button>
+              </button>
 
-          <button class="btn btn-danger" ng-click="purge()">Clear</button>
+              <button class="btn btn-danger" ng-click="purge()">Clear</button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        <div ng-repeat="response in responses">
-          <ng-switch on="isEditing(response)">
-            <div ng-switch-when="false">
-              <p class="actions-bar">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div ng-repeat="response in responses">
+              <ng-switch on="isEditing(response)">
+                <div ng-switch-when="false">
+                  <p class="actions-bar">
                     <span class="toolbox-button-container">
-                      <span class="toolbox-button" ng-if='response.usageType == "single"'>
-                        <span class="glyphicon glyphicon-exclamation-sign" title="This is a single use response"></span>
+                      <span
+                        class="toolbox-button"
+                        ng-if='response.usageType == "single"'
+                      >
+                        <span
+                          class="glyphicon glyphicon-exclamation-sign"
+                          title="This is a single use response"
+                        ></span>
                       </span>
                     </span>
 
-                <button class="btn btn-primary btn-xs" ng-click="startEditing(response)">
-                  Edit
-                </button>
-                <button
-                  ng-if="!response.confirmDelete"
-                  class="animate-if btn btn-danger btn-xs"
-                  ng-click="promptDelete(response)"
-                >
-                  <span class=""></span> Delete
-                </button>
-                <button
-                  ng-if="response.confirmDelete"
-                  class="btn btn-default btn-xs"
-                  ng-click="cancelDelete(response)"
-                >
-                  Cancel
-                </button>
-                <button
-                  ng-if="response.confirmDelete"
-                  class="btn btn-danger btn-xs"
-                  ng-click="delete(response)"
-                >
-                  <span class=""></span> Confirm
-                </button>
-                <a
-                  ng-class="response.cssClassName"
-                  ng-click="startEditing(response)"
-                  class="show-pointer"
-                >
-                  <span class="badge">{{ response.count }}</span>
-                  {{ response.tenant }} {{ response.method }} {{ response.url }} {{ response.statusCode }}</a
-                >
-              </p>
-              <div ng-if="jsonPreview" class="preview-container">
+                    <button
+                      class="btn btn-primary btn-xs"
+                      ng-click="startEditing(response)"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      ng-if="!response.confirmDelete"
+                      class="animate-if btn btn-danger btn-xs"
+                      ng-click="promptDelete(response)"
+                    >
+                      <span class=""></span> Delete
+                    </button>
+                    <button
+                      ng-if="response.confirmDelete"
+                      class="btn btn-default btn-xs"
+                      ng-click="cancelDelete(response)"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      ng-if="response.confirmDelete"
+                      class="btn btn-danger btn-xs"
+                      ng-click="delete(response)"
+                    >
+                      <span class=""></span> Confirm
+                    </button>
+                    <a
+                      ng-class="response.cssClassName"
+                      ng-click="startEditing(response)"
+                      class="show-pointer"
+                    >
+                      <span class="badge">{{ response.count }}</span>
+                      {{ response.tenant }} {{ response.method }} {{
+                      response.url }} {{ response.statusCode }}</a
+                    >
+                  </p>
+                  <div ng-if="jsonPreview" class="preview-container">
                     <pre ng-click="startEditing(response)" class="show-pointer">
 {{ response.jsonText }}</pre
                     >
-              </div>
-            </div>
-
-            <div ng-switch-when="true">
-              <br />
-              <form class="form-horizontal">
-                <div class="form-group">
-                  <div class="col-sm-2">
-                    <select class="form-control" ng-model="response.method" ng-options="verb for verb in verbs"></select>
-                  </div>
-                  <div class="col-sm-7">
-                    <input type="hidden" placeholder="tenant name" class="form-control" ng-model="response.tenant" />
-                    <input type="text" class="form-control" ng-model="response.url" />
-                  </div>
-                  <div class="col-sm-2">
-                    <select class="form-control" ng-model="response.usageType" ng-options="type for type in usageTypes"></select>
-                  </div>
-                  <div class="col-sm-1">
-                    <input type="text" class="form-control" ng-model="response.statusCode" />
                   </div>
                 </div>
-                <div class="form-group">
-                  <div class="col-sm-12">
+
+                <div ng-switch-when="true">
+                  <br />
+                  <form class="form-horizontal">
+                    <div class="form-group">
+                      <div class="col-sm-2">
+                        <select
+                          class="form-control"
+                          ng-model="response.method"
+                          ng-options="verb for verb in verbs"
+                        ></select>
+                      </div>
+                      <div class="col-sm-7">
+                        <input
+                          type="hidden"
+                          placeholder="tenant name"
+                          class="form-control"
+                          ng-model="response.tenant"
+                        />
+                        <input
+                          type="text"
+                          class="form-control"
+                          ng-model="response.url"
+                        />
+                      </div>
+                      <div class="col-sm-2">
+                        <select
+                          class="form-control"
+                          ng-model="response.usageType"
+                          ng-options="type for type in usageTypes"
+                        ></select>
+                      </div>
+                      <div class="col-sm-1">
+                        <input
+                          type="text"
+                          class="form-control"
+                          ng-model="response.statusCode"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="col-sm-12">
                         <textarea
                           id="editor_{{ response.uid }}"
                           ng-keydown="jsonBodyKeyDown($event, response)"
                           class="form-control"
                           style="font-family: monospace"
                           rows="10"
-                          ng-model="response.jsonText"></textarea>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <div class="col-sm-6">
-                        <span ng-non-bindable><strong>Replacements</strong><br />
+                          ng-model="response.jsonText"
+                        ></textarea>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="col-sm-6">
+                        <span ng-non-bindable
+                          ><strong>Replacements</strong><br />
                           {{ $ticks }} - current timestamp<br />
                           {{ $count }} - times that this route was called<br />
-                          {{ $uid }} - node uuidv4</span>
-                  </div>
-                  <div class="col-sm-6">
-                    <div class="pull-right">
-                      <button
-                        class="btn btn-primary"
-                        ng-click="save(response)"
-                      >
-                        <span ng-if="!response.isNew">Update</span>
-                        <span ng-if="response.isNew">Create</span>
-                      </button>
-                      <button class="btn" ng-click="cancel(response)">
-                        <span>Cancel</span>
-                      </button>
+                          {{ $uid }} - node uuidv4</span
+                        >
+                      </div>
+                      <div class="col-sm-6">
+                        <div class="pull-right">
+                          <button
+                            class="btn btn-primary"
+                            ng-click="save(response)"
+                          >
+                            <span ng-if="!response.isNew">Update</span>
+                            <span ng-if="response.isNew">Create</span>
+                          </button>
+                          <button class="btn" ng-click="cancel(response)">
+                            <span>Cancel</span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </form>
                 </div>
-              </form>
+              </ng-switch>
             </div>
-          </ng-switch>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
 
-<script src="js/app.js"></script>
-</body>
-
+    <script src="js/app.js"></script>
+  </body>
 </html>

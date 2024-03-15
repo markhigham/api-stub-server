@@ -27,6 +27,6 @@ export interface IResponseStore {
   find(
     method: string,
     url: string,
-    tenant: string
+    tenant: string,
   ): Promise<[IResponse, IMatchResult]>;
 }

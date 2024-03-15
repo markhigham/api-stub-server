@@ -70,7 +70,7 @@ app.all("/_:verb/*", async (req: any, res) => {
   logger.debug(`${verb} ${triggerUrl}`);
 
   await responseCollection.push(
-    new Response(verb, triggerUrl, req.body, "persistent", tenant)
+    new Response(verb, triggerUrl, req.body, "persistent", tenant),
   );
 
   const response = {
@@ -89,7 +89,7 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
   res.header(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization",
   );
 
   if (method == "OPTIONS") {
@@ -111,7 +111,7 @@ app.all("*", async (req: any, res) => {
   const [response, matchResult] = await responseCollection.find(
     method,
     url,
-    tenant
+    tenant,
   );
 
   logger.debug(response);
@@ -127,7 +127,7 @@ app.all("*", async (req: any, res) => {
     const body = ResponseInterpolator.interpolate(
       response,
       matchResult.routeMatch,
-      tenant
+      tenant,
     );
 
     logger.info(`${response.statusCode} ${method} ${req.url} ${tenant}`);
@@ -145,7 +145,7 @@ app.all("*", async (req: any, res) => {
       req.url,
       req.body,
       "persistent",
-      tenant
+      tenant,
     );
 
     responseCollection.push(payload);

@@ -6,7 +6,7 @@ export class ResponseInterpolator {
   static interpolate(
     response: IResponse,
     matchResult: { [p: string]: string },
-    tenant: string = ""
+    tenant: string = "",
   ): any {
     const ticks = new Date().getTime().toString();
     const count = String(++response.count);

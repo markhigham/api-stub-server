@@ -92,13 +92,13 @@ export class MemoryStore implements IResponseStore {
     response: IResponse,
     method: string,
     url: string,
-    tenant: string
+    tenant: string,
   ): IMatchResult {
     const route = new Route(response.url);
     const routeMatch = route.match(url);
 
     this.logger.debug(
-      `checking ${method} ${url} '${tenant}' against ${response.method} ${response.url} '${response.tenant}'`
+      `checking ${method} ${url} '${tenant}' against ${response.method} ${response.url} '${response.tenant}'`,
     );
 
     if (!routeMatch) {
@@ -123,7 +123,7 @@ export class MemoryStore implements IResponseStore {
   find(
     method: string,
     url: string,
-    tenant: string
+    tenant: string,
   ): Promise<[IResponse, IMatchResult]> {
     let response: IResponse = undefined;
     let matchResult: IMatchResult = undefined;
