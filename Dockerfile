@@ -7,7 +7,7 @@ RUN npm install
 COPY . ./
 RUN npm run build
 
-FROM base as release
+FROM base AS release
 
 WORKDIR /app
 COPY --from=base /app/static /app/static
