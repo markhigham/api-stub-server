@@ -37,7 +37,7 @@ Environment variables
 PORT: Port number
 SAVED_RESPONSE_FILE: Path to a file containing pre-saved responses 
 ECHO_ROUTE_PARAMS: Echo and route params back to the response
-
+RECORD_REQUESTS: Set to true to record requests
     `)
 }
 
@@ -68,9 +68,13 @@ app
   .then(() => {
     logger.info(`log level ${config.logLevel}`)
 
-    if (argv.r) {
+    if (argv.r || process.env.RECORD_REQUESTS) {
       let limit = isNaN(argv.r) ? 0 : argv.r
       if (limit === true) limit = -1
+
+      if(process.env.RECORD_REQUESTS){
+        limit = -1
+      }
       console.log(`recording ${limit} requests`)
       app.startRecording(limit)
     }
