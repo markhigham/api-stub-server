@@ -23,7 +23,7 @@ const serverDetails = {
 let recordingCounter = 0
 
 function tenantMiddleware(req, res, next) {
-  req.tenant = req.token || ''
+  // req.tenant = req.token || ''
   next()
 }
 
