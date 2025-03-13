@@ -76,6 +76,7 @@ export class MemoryStore implements IResponseStore {
   }
 
   push(response: IResponse): Promise<void> {
+    this.logger.debug(`push ${response.uid} ${response.url}`)
     this.responses[response.uid] = response
     return Promise.resolve()
   }
@@ -116,7 +117,6 @@ export class MemoryStore implements IResponseStore {
       return { isMatch: false }
     }
 
-    this.logger.debug(response)
     return { isMatch: true, routeMatch: routeMatch }
   }
 
