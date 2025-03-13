@@ -113,16 +113,12 @@ app.all('*', async (req: any, res) => {
     tenant,
   )
 
-  logger.debug(response)
-
   if (response && response.usageType == USAGE_TYPE_SINGLE) {
     logger.info('delete single use')
     await responseCollection.delete(response.uid)
   }
 
   if (response) {
-    logger.debug(response)
-
     const body = ResponseInterpolator.interpolate(
       response,
       matchResult.routeMatch,
