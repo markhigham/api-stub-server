@@ -166,9 +166,10 @@
                       <div class="col-sm-6">
                         <span ng-non-bindable
                           ><strong>Replacements</strong><br />
-                          {{ $ticks }} - current timestamp<br />
-                          {{ $count }} - times that this route was called<br />
-                          {{ $uid }} - node uuidv4</span
+                          {{$ticks}} - number of milliseconds since the service started<br />
+                          {{$seconds}} - the number of seconds since service started<br />
+                          {{$count}} - times that this route was called<br />
+                          {{$uid}} - node uuidv4</span
                         >
                       </div>
                       <div class="col-sm-6">
