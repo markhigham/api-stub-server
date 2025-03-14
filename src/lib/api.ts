@@ -4,7 +4,11 @@ import * as bearerToken from 'express-bearer-token'
 
 import { config } from './config'
 import { MemoryStore } from './datastores/memoryStore'
-import { IResponseStore, USAGE_TYPE_SINGLE } from './interfaces'
+import {
+  IResponseHandler,
+  IResponseStore,
+  USAGE_TYPE_SINGLE,
+} from './interfaces'
 import { ResponseInterpolator } from './interpolator'
 import { LogManager } from './logger'
 import { Response } from './response'
@@ -12,6 +16,8 @@ import { createManagementRouter } from './routes/admin'
 import { createStaticRouter } from './routes/static'
 
 const logger = LogManager.getLogger(__filename)
+
+const handlers: Record<string, IResponseHandler>[] = []
 
 const serverDetails = {
   host: '',
@@ -28,8 +34,8 @@ function tenantMiddleware(req, res, next) {
 }
 
 const app = express()
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }))
+app.use(bodyParser.json({ limit: '50mb' }))
 
 app.use(bearerToken())
 app.use(tenantMiddleware)
@@ -50,38 +56,6 @@ app.use('/', staticRouter)
 const managementRouter = createManagementRouter(responseCollection, '/__app')
 app.use('/__response', managementRouter)
 
-/**
- * Any POST sent to /_ will be handled as an attempt to seed another response
- * for example
- * POST /_GET/api/v1/  { 'hello' : 'world' }
- * will create a new GET response at /api/v1 which returns the helloworld json
- */
-app.all('/_:verb/*', async (req: any, res) => {
-  if (req.method !== 'POST') {
-    logger.error('this only works with POSTS!')
-    res.status(400).send('only POST works to setup return values')
-    return
-  }
-
-  const verb = req.params.verb
-  const triggerUrl = req.url.replace('/_' + verb, '')
-  const tenant = req.tenant || ''
-  logger.debug(`${verb} ${triggerUrl}`)
-
-  await responseCollection.push(
-    new Response(verb, triggerUrl, req.body, 'persistent', tenant),
-  )
-
-  const response = {
-    triggerUrl: triggerUrl,
-  }
-
-  res.json(response)
-})
-
-/**
- * just allow all cors requests and ignore any options pre-flight checks
- */
 app.use((req, res, next) => {
   const method = req.method
   res.header('Access-Control-Allow-Origin', '*')
@@ -119,11 +93,23 @@ app.all('*', async (req: any, res) => {
   }
 
   if (response) {
-    const body = ResponseInterpolator.interpolate(
+    let body = ResponseInterpolator.interpolate(
       response,
       matchResult.routeMatch,
       tenant,
     )
+
+    if (response.handlerName) {
+      logger.info(`${response.url} uses handler ${response.handlerName}`)
+      const handler: IResponseHandler = handlers[response.handlerName]
+
+      if (handler) {
+        logger.info('found handler')
+        body = handler.updateBody(body)
+        response.body = body
+        responseCollection.update(response)
+      }
+    }
 
     logger.info(`${response.statusCode} ${method} ${req.url} ${tenant}`)
     res.status(response.statusCode).send(body)
@@ -168,6 +154,12 @@ function start(port: number, host: string): Promise<void> {
 export class Api {
   start(port, host) {
     return start(port, host)
+  }
+
+  registerHandler(handler: IResponseHandler) {
+    logger.info(`registering handler "${handler.name}"`)
+    handler.init(this)
+    handlers[handler.name] = handler
   }
 
   stop(): Promise<any> {

@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import * as fs from 'fs'
 import * as minimist from 'minimist'
+import * as path from 'node:path'
+import 'source-map-support/register'
 
 import { Api } from '../lib/api'
 import { config } from '../lib/config'
@@ -28,6 +30,8 @@ version: ${config.buildNumber}
     Set to 0 for no limits.
     
 -e  (Optional) Echo any route params to the JSON response - defaults to false
+
+-x  (Optional) Path to a handlers directory
 
 saved_response_file.json (optional)
     Path to a file containing pre-saved responses
@@ -66,13 +70,47 @@ const app = new Api()
 app
   .start(port, host)
   .then(() => {
-    logger.info(`log level ${config.logLevel}`)
+    if (!argv.x) return
+
+    const handlersPath = argv.x
+    if (!fs.existsSync(handlersPath)) {
+      console.error(`${handlersPath} does not exist`)
+      process.exit(-1)
+    }
+
+    const items = fs
+      .readdirSync(handlersPath)
+      .filter((file) => file.endsWith('.js'))
+      .map((file) => path.join(handlersPath, file))
+
+    logger.info(`Found ${items.length} handler(s) in ${handlersPath}`)
+    return items
+  })
+  .then((paths) => {
+    if (typeof paths !== 'undefined') {
+      logger.info('Custom handlers found')
+
+      const loaders = paths.map(
+        (path) =>
+          new Promise(async (resolve) => {
+            const module = await import(path)
+            const handler = new module.handler()
+            app.registerHandler(handler)
+            resolve(null)
+          }),
+      )
+
+      return Promise.all(loaders)
+    }
+  })
+  .then(() => {
+    logger.info(`log level is set to "${config.logLevel}"`)
 
     if (argv.r || process.env.RECORD_REQUESTS) {
       let limit = isNaN(argv.r) ? 0 : argv.r
       if (limit === true) limit = -1
 
-      if(process.env.RECORD_REQUESTS){
+      if (process.env.RECORD_REQUESTS) {
         limit = -1
       }
       console.log(`recording ${limit} requests`)
@@ -80,20 +118,20 @@ app
     }
 
     if (argv.s) {
-      logger.info('Using sample data')
+      logger.info('Sample data')
       return app.upload(sampleData)
     }
 
     let filename
     if (process.env.SAVED_RESPONSE_FILE) {
-      logger.info(`using ${process.env.SAVED_RESPONSE_FILE}`)
+      logger.info(`Loading: ${process.env.SAVED_RESPONSE_FILE}`)
       filename = process.env.SAVED_RESPONSE_FILE
     }
 
     // This means that arg will override environment variable
     if (argv._.length) {
       filename = argv._[0]
-      logger.info(`using ${filename}`)
+      logger.info(`Loading: ${filename}`)
     }
 
     if (!filename) return

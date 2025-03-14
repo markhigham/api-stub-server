@@ -49,7 +49,12 @@
 }
 
 .actions-bar a {
-  display: block;
+  display:block;
+}
+
+.actions-bar .push-right {
+  float: right;
+  border: solid 5px #ccc;
 }
 
 .preview-container {

@@ -111,7 +111,8 @@
                     </button>
                     <a ng-class="response.cssClassName" ng-click="startEditing(response)" class="show-pointer">
                       <span class="badge">{{ response.count }}</span>
-                      {{ response.tenant }} {{ response.method }} {{ response.url }} {{ response.statusCode }}</a
+                      {{ response.tenant }} {{ response.method }} {{ response.url }} [{{ response.statusCode }}] {{
+                      response.handlerName }}</a
                     >
                   </p>
                   <div ng-if="jsonPreview" class="preview-container">
@@ -123,14 +124,15 @@
                   <br />
                   <form class="form-horizontal">
                     <div class="form-group">
-                      <div class="col-sm-2">
+                      <div class="col-sm-1">
                         <select
                           class="form-control"
                           ng-model="response.method"
                           ng-options="verb for verb in verbs"
                         ></select>
                       </div>
-                      <div class="col-sm-7">
+
+                      <div class="col-sm-6">
                         <input
                           type="hidden"
                           placeholder="tenant name"
@@ -138,6 +140,9 @@
                           ng-model="response.tenant"
                         />
                         <input type="text" class="form-control" ng-model="response.url" />
+                      </div>
+                      <div class="col-sm-2">
+                        <input placeholder="handler" type="text" class="form-control" ng-model="response.handlerName" />
                       </div>
                       <div class="col-sm-2">
                         <select

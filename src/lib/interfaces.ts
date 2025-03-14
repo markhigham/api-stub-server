@@ -7,6 +7,7 @@ export interface IResponse {
   method: string
   tenant: string
   body: any
+  handlerName?: string
   url: string
   usageType: string
   uid: string
@@ -29,4 +30,10 @@ export interface IResponseStore {
     url: string,
     tenant: string,
   ): Promise<[IResponse, IMatchResult]>
+}
+
+export interface IResponseHandler {
+  name: string
+  init: (config: any) => void
+  updateBody: (body: IResponse) => IResponse
 }
