@@ -1,4 +1,4 @@
-var stubApp = angular.module('stubApp', ['LocalStorageModule'])
+var stubApp = angular.module('stubApp', [])
 
 stubApp.directive('inlineUpload', function () {
   return {
@@ -69,15 +69,19 @@ stubApp.controller(
   },
 )
 
-stubApp.service('ConfigService', function (localStorageService) {
+stubApp.service('ConfigService', function () {
   function setValue(key, value) {
-    localStorageService.set(key, value)
+    localStorage.setItem(key, JSON.stringify(value))
   }
 
   function getValue(key, defaultValue) {
-    const value = localStorageService.get(key)
-    if (!value) return defaultValue
-    return value
+    const value = localStorage.getItem(key)
+    if (value === null) return defaultValue
+    try {
+      return JSON.parse(value)
+    } catch (e) {
+      return defaultValue
+    }
   }
 
   return {
@@ -120,9 +124,11 @@ stubApp.controller(
         isEditing: true,
         usageType: 'persistent',
         isNew: true,
+        statusCode: 200,
         method: 'get',
         body: {},
         jsonText: '{}',
+        handlerName: undefined,
       }
 
       $scope.responses.unshift(response)
@@ -316,7 +322,9 @@ stubApp.controller(
     }
 
     function restoreDefaults() {
-      $scope.jsonPreview = ConfigService.get('jsonPreview', true)
+      const jsonPreview = ConfigService.get('jsonPreview', true)
+      $scope.jsonPreview = jsonPreview
+      $scope.$emit('showPreview', jsonPreview)
     }
 
     restoreDefaults()

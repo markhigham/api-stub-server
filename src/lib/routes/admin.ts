@@ -90,6 +90,7 @@ export function createManagementRouter(
       stubbedResponse.usageType,
       tenant,
       stubbedResponse.statusCode,
+      stubbedResponse.handler,
     )
 
     await store.push(payload)

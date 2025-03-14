@@ -53,7 +53,9 @@ export class MemoryStore implements IResponseStore {
     found.usageType = response.usageType
     found.tenant = response.tenant
     found.statusCode = response.statusCode
+    found.handlerName = response.handlerName
 
+    this.logger.debug(`Updated response uid:${response.uid}`)
     return Promise.resolve()
   }
 
@@ -67,6 +69,7 @@ export class MemoryStore implements IResponseStore {
         r.usageType,
         r.tenant || '',
         r.statusCode || 200,
+        r.handlerName,
       )
       response.uid = r.uid
       this.responses[response.uid] = response

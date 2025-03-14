@@ -1,8 +1,8 @@
 import * as clone from 'clone'
+import * as moment from 'moment'
 
 import { config } from './config'
 import { IResponse } from './interfaces'
-import * as moment from "moment";
 
 const baselineTimer = new Date()
 

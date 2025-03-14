@@ -15,14 +15,13 @@
     "build:watch": "tsc -w",
     "debug": "LOG_LEVEL=debug nodemon dist/bin/api-stub-server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prettier": "prettier . --write",
+    "format": "prettier . --write",
     "start": "node dist/index.js"
   },
   "author": "Mark Higham",
   "license": "ISC",
   "dependencies": {
     "angular": "^1.8.3",
-    "angular-local-storage": "^0.7.1",
     "body-parser": "^1.20.3",
     "clone": "^2.1.2",
     "express": "^4.21.2",
@@ -36,11 +35,11 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/clone": "^2.1.4",
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.10",
     "@types/route-parser": "^0.1.7",
-    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "nodemon": "^3.1.9",
     "prettier": "^3.5.3",
     "typescript": "^5.8.2"

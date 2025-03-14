@@ -11,6 +11,7 @@ export class Response implements IResponse {
   url: string
   usageType: string
   uid: string
+  handlerName: string
 
   constructor(
     method: string,
@@ -19,6 +20,7 @@ export class Response implements IResponse {
     usageType: string = USAGE_TYPE_PERSISTENT,
     tenant: string = '',
     statusCode: number = 200,
+    handlerName?: string,
   ) {
     this.usageType = usageType
 
@@ -28,5 +30,6 @@ export class Response implements IResponse {
     this.tenant = tenant.toLowerCase()
     this.statusCode = statusCode
     this.uid = uuid.v4()
+    this.handlerName = handlerName
   }
 }
